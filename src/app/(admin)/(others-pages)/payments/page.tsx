@@ -5,9 +5,9 @@ import { createSupabaseServer } from "@/lib/supabaseServer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pagos | TailAdmin - Panel Next.js",
+  title: "Pagos | Fintech RD - Panel Next.js",
   description:
-    "Listado de pagos con tabla básica en el panel TailAdmin.",
+    "Listado de pagos con tabla básica en el panel Fintech RD.",
 };
 
 async function getPayments(): Promise<Order[]> {

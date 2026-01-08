@@ -5,9 +5,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Alertas | TailAdmin - Panel Next.js",
+  title: "Alertas | Fintech RD - Panel Next.js",
   description:
-    "Página de alertas para el panel TailAdmin con Tailwind CSS y Next.js",
+    "Página de alertas para el panel Fintech RD con Tailwind CSS y Next.js",
   // other metadata
 };
 

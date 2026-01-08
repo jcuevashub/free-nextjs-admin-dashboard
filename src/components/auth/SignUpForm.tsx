@@ -11,16 +11,24 @@ export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
-   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const formAction = async (formData: FormData) => {
-    const result = await signUpAction(formData);
-    if (result?.error) {
-      setError(result.error);
-      setSuccess(false);
-    } else {
-      setError(null);
-      setSuccess(true);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await signUpAction(formData);
+
+      // If we get here, it means there was an error (redirect doesn't return)
+      if (result?.error) {
+        setError(result.error);
+        setIsLoading(false);
+      }
+    } catch (err) {
+      // Handle any unexpected errors
+      setError('Error al crear la cuenta. Por favor intenta de nuevo.');
+      setIsLoading(false);
     }
   };
   return (
@@ -123,30 +131,39 @@ export default function SignUpForm() {
                   />
                   <p className="inline-block font-normal text-gray-500 dark:text-gray-400">
                     Al crear una cuenta aceptas los{" "}
-                    <span className="text-gray-800 dark:text-white/90">
-                      Términos y Condiciones,
-                    </span>{" "}
-                    and our{" "}
-                    <span className="text-gray-800 dark:text-white">
+                    <Link
+                      href="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300"
+                    >
+                      Términos y Condiciones
+                    </Link>
+                    {" "}y nuestra{" "}
+                    <Link
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300"
+                    >
                       Política de Privacidad
-                    </span>
+                    </Link>
                   </p>
                 </div>
                 {/* <!-- Button --> */}
                 <div>
-                  <button className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
-                    Crear cuenta
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
                   </button>
                 </div>
               </div>
             </form>
             {error ? (
               <p className="mt-3 text-sm text-error-500">{error}</p>
-            ) : null}
-            {success ? (
-              <p className="mt-3 text-sm text-success-600">
-                Te enviamos un correo para confirmar tu cuenta. Revisa tu bandeja y vuelve para iniciar sesión.
-              </p>
             ) : null}
 
             <div className="mt-5">

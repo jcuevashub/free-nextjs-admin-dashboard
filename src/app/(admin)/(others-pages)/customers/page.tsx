@@ -4,9 +4,9 @@ import BasicTableOne from "@/components/tables/BasicTableOne";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Clientes | TailAdmin - Panel Next.js",
+  title: "Clientes | Fintech RD - Panel Next.js",
   description:
-    "Listado de Clientes con tabla básica en el panel TailAdmin.",
+    "Listado de Clientes con tabla básica en el panel Fintech RD.",
 };
 
 export default function TransactionsPage() {

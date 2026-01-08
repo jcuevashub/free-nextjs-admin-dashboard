@@ -5,9 +5,9 @@ import type { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Taxes | TailAdmin - Next.js Dashboard Template",
+  title: "Taxes | Fintech RD - Next.js Dashboard Template",
   description:
-    "Taxes list page showing a basic table example in TailAdmin Next.js dashboard.",
+    "Taxes list page showing a basic table example in Fintech RD Next.js dashboard.",
 };
 
 export default function TaxesPage() {

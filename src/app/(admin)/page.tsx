@@ -9,8 +9,8 @@ import DemographicCard from "@/components/ecommerce/DemographicCard";
 
 export const metadata: Metadata = {
   title:
-    "Panel de e-commerce | TailAdmin - Plantilla Next.js",
-  description: "Inicio del panel TailAdmin en español",
+    "Panel de e-commerce | Fintech RD - Plantilla Next.js",
+  description: "Inicio del panel Fintech RD en español",
 };
 
 export default function Ecommerce() {

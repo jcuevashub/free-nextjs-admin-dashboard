@@ -4,9 +4,9 @@ import BasicTableOne from "@/components/tables/BasicTableOne";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tabla básica | TailAdmin - Panel Next.js",
+  title: "Tabla básica | Fintech RD - Panel Next.js",
   description:
-    "Página de tabla básica para el panel TailAdmin con Tailwind CSS y Next.js",
+    "Página de tabla básica para el panel Fintech RD con Tailwind CSS y Next.js",
   // other metadata
 };
 

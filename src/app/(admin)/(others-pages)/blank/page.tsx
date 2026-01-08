@@ -3,8 +3,8 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Página en blanco | TailAdmin - Panel Next.js",
-  description: "Página en blanco para el panel TailAdmin",
+  title: "Página en blanco | Fintech RD - Panel Next.js",
+  description: "Página en blanco para el panel Fintech RD",
 };
 
 export default function BlankPage() {

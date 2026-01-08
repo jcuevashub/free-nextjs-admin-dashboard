@@ -13,9 +13,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Elementos de formulario | TailAdmin - Panel Next.js",
+  title: "Elementos de formulario | Fintech RD - Panel Next.js",
   description:
-    "Página de elementos de formulario para el panel TailAdmin con Tailwind CSS y Next.js",
+    "Página de elementos de formulario para el panel Fintech RD con Tailwind CSS y Next.js",
 };
 
 export default function FormElements() {

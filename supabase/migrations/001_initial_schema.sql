@@ -1,30 +1,75 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
 -- ============================================
--- TIPOS ENUM
+-- EXTENSIONES
 -- ============================================
 
-CREATE TYPE account_type AS ENUM ('checking', 'savings');
-CREATE TYPE account_status AS ENUM ('active', 'suspended', 'closed', 'pending_verification');
-CREATE TYPE currency_code AS ENUM ('DOP', 'USD');
-CREATE TYPE transaction_type AS ENUM ('credit', 'debit', 'transfer', 'fee', 'adjustment');
-CREATE TYPE transaction_status AS ENUM ('pending', 'completed', 'failed', 'reversed');
-CREATE TYPE transfer_type AS ENUM ('internal', 'tef', 'ach', 'international');
-CREATE TYPE card_type AS ENUM ('virtual', 'physical');
-CREATE TYPE card_status AS ENUM ('active', 'frozen', 'cancelled', 'pending');
-CREATE TYPE invoice_status AS ENUM ('draft', 'pending', 'paid', 'overdue', 'cancelled');
-CREATE TYPE kyc_status AS ENUM ('pending', 'in_review', 'approved', 'rejected', 'requires_update');
-CREATE TYPE user_role AS ENUM ('owner', 'admin', 'accountant', 'employee', 'viewer');
-CREATE TYPE notification_channel AS ENUM ('email', 'sms', 'push', 'in_app');
-CREATE TYPE ncf_type AS ENUM ('B01', 'B02', 'B14', 'B15', 'B16');
+-- Note: gen_random_uuid() is built-in to PostgreSQL 13+, no extension needed
+CREATE EXTENSION IF NOT EXISTS "pgcrypto"; -- For encryption functions
+
+-- ============================================
+-- TIPOS ENUM (con IF NOT EXISTS)
+-- ============================================
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'account_type') THEN
+        CREATE TYPE account_type AS ENUM ('checking', 'savings');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'account_status') THEN
+        CREATE TYPE account_status AS ENUM ('active', 'suspended', 'closed', 'pending_verification');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'currency_code') THEN
+        CREATE TYPE currency_code AS ENUM ('DOP', 'USD');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'transaction_type') THEN
+        CREATE TYPE transaction_type AS ENUM ('credit', 'debit', 'transfer', 'fee', 'adjustment');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'transaction_status') THEN
+        CREATE TYPE transaction_status AS ENUM ('pending', 'completed', 'failed', 'reversed');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'transfer_type') THEN
+        CREATE TYPE transfer_type AS ENUM ('internal', 'tef', 'ach', 'international');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'card_type') THEN
+        CREATE TYPE card_type AS ENUM ('virtual', 'physical');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'card_status') THEN
+        CREATE TYPE card_status AS ENUM ('active', 'frozen', 'cancelled', 'pending');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'invoice_status') THEN
+        CREATE TYPE invoice_status AS ENUM ('draft', 'pending', 'paid', 'overdue', 'cancelled');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'kyc_status') THEN
+        CREATE TYPE kyc_status AS ENUM ('pending', 'in_review', 'approved', 'rejected', 'requires_update');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+        CREATE TYPE user_role AS ENUM ('owner', 'admin', 'accountant', 'employee', 'viewer');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'notification_channel') THEN
+        CREATE TYPE notification_channel AS ENUM ('email', 'sms', 'push', 'in_app');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ncf_type') THEN
+        CREATE TYPE ncf_type AS ENUM ('B01', 'B02', 'B14', 'B15', 'B16');
+    END IF;
+END $$;
 
 -- ============================================
 -- TABLA: companies
 -- ============================================
 
-CREATE TABLE companies (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS companies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     rnc VARCHAR(11) UNIQUE NOT NULL,
     company_name VARCHAR(255) NOT NULL,
     legal_name VARCHAR(255) NOT NULL,
@@ -56,7 +101,7 @@ CREATE INDEX idx_companies_kyc_status ON companies(kyc_status);
 -- TABLA: users
 -- ============================================
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
     full_name VARCHAR(255) NOT NULL,
@@ -87,8 +132,8 @@ CREATE INDEX idx_users_cedula ON users(cedula);
 -- TABLA: accounts
 -- ============================================
 
-CREATE TABLE accounts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS accounts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     account_number VARCHAR(20) UNIQUE NOT NULL,
     account_type account_type DEFAULT 'checking',
@@ -118,8 +163,8 @@ CREATE INDEX idx_accounts_currency ON accounts(currency);
 -- TABLA: transactions
 -- ============================================
 
-CREATE TABLE transactions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
     transaction_type transaction_type NOT NULL,
     amount NUMERIC(15, 2) NOT NULL,
@@ -156,8 +201,8 @@ CREATE INDEX idx_transactions_ncf ON transactions(ncf);
 -- TABLA: transfers
 -- ============================================
 
-CREATE TABLE transfers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS transfers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     from_account_id UUID NOT NULL REFERENCES accounts(id),
     to_account_id UUID REFERENCES accounts(id),
     transfer_type transfer_type NOT NULL,
@@ -199,8 +244,8 @@ CREATE INDEX idx_transfers_created_at ON transfers(created_at DESC);
 -- TABLA: recipients
 -- ============================================
 
-CREATE TABLE recipients (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS recipients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     recipient_name VARCHAR(255) NOT NULL,
     recipient_type VARCHAR(50),
@@ -231,8 +276,8 @@ CREATE INDEX idx_recipients_is_active ON recipients(is_active);
 -- TABLA: cards
 -- ============================================
 
-CREATE TABLE cards (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS cards (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
     card_holder_id UUID NOT NULL REFERENCES users(id),
     card_number_encrypted TEXT NOT NULL,
@@ -264,8 +309,8 @@ CREATE INDEX idx_cards_type ON cards(card_type);
 -- TABLA: card_transactions
 -- ============================================
 
-CREATE TABLE card_transactions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS card_transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     card_id UUID NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
     merchant_name VARCHAR(255),
     mcc_code VARCHAR(4),
@@ -287,8 +332,8 @@ CREATE INDEX idx_card_transactions_merchant ON card_transactions(merchant_name);
 -- TABLA: customers (clientes de la empresa)
 -- ============================================
 
-CREATE TABLE customers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS customers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     customer_name VARCHAR(255) NOT NULL,
     rnc_cedula VARCHAR(11),
@@ -313,8 +358,8 @@ CREATE INDEX idx_customers_status ON customers(status);
 -- TABLA: products
 -- ============================================
 
-CREATE TABLE products (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS products (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     sku VARCHAR(100),
     product_name VARCHAR(255) NOT NULL,
@@ -337,8 +382,8 @@ CREATE INDEX idx_products_is_active ON products(is_active);
 -- TABLA: invoices
 -- ============================================
 
-CREATE TABLE invoices (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS invoices (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     customer_id UUID NOT NULL REFERENCES customers(id),
     invoice_number VARCHAR(50) UNIQUE NOT NULL,
@@ -373,8 +418,8 @@ CREATE INDEX idx_invoices_due_date ON invoices(due_date);
 -- TABLA: invoice_items
 -- ============================================
 
-CREATE TABLE invoice_items (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS invoice_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     invoice_id UUID NOT NULL REFERENCES invoices(id) ON DELETE CASCADE,
     product_id UUID REFERENCES products(id),
     description TEXT NOT NULL,
@@ -393,8 +438,8 @@ CREATE INDEX idx_invoice_items_product_id ON invoice_items(product_id);
 -- TABLA: ncf_records
 -- ============================================
 
-CREATE TABLE ncf_records (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS ncf_records (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     ncf VARCHAR(19) UNIQUE NOT NULL,
     ncf_type ncf_type NOT NULL,
@@ -418,8 +463,8 @@ CREATE INDEX idx_ncf_records_date ON ncf_records(transaction_date);
 -- TABLA: itbis_declarations
 -- ============================================
 
-CREATE TABLE itbis_declarations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS itbis_declarations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     period_year INTEGER NOT NULL,
     period_month INTEGER NOT NULL,
@@ -446,8 +491,8 @@ CREATE INDEX idx_itbis_declarations_period ON itbis_declarations(period_year, pe
 -- TABLA: kyc_verifications
 -- ============================================
 
-CREATE TABLE kyc_verifications (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS kyc_verifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     verification_type VARCHAR(50) NOT NULL,
     verification_status kyc_status DEFAULT 'pending',
@@ -471,8 +516,8 @@ CREATE INDEX idx_kyc_verifications_status ON kyc_verifications(verification_stat
 -- TABLA: company_documents
 -- ============================================
 
-CREATE TABLE company_documents (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS company_documents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     document_type VARCHAR(50) NOT NULL,
     file_name VARCHAR(255) NOT NULL,
@@ -493,8 +538,8 @@ CREATE INDEX idx_company_documents_type ON company_documents(document_type);
 -- TABLA: notifications
 -- ============================================
 
-CREATE TABLE notifications (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     type VARCHAR(50) NOT NULL,
     title VARCHAR(255) NOT NULL,
@@ -514,8 +559,8 @@ CREATE INDEX idx_notifications_created_at ON notifications(created_at DESC);
 -- TABLA: notification_preferences
 -- ============================================
 
-CREATE TABLE notification_preferences (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS notification_preferences (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     channel notification_channel NOT NULL,
     event_type VARCHAR(50) NOT NULL,
@@ -531,8 +576,8 @@ CREATE INDEX idx_notif_prefs_user ON notification_preferences(user_id);
 -- TABLA: audit_logs
 -- ============================================
 
-CREATE TABLE audit_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id),
     company_id UUID REFERENCES companies(id),
     action VARCHAR(100) NOT NULL,
@@ -553,8 +598,8 @@ CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at DESC);
 -- TABLA: login_logs
 -- ============================================
 
-CREATE TABLE login_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS login_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     login_at TIMESTAMPTZ DEFAULT NOW(),
     ip_address INET,
@@ -660,11 +705,3 @@ ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notification_preferences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE login_logs ENABLE ROW LEVEL SECURITY;
-```
-
-### Archivo: `supabase/migrations/002_rls_policies.sql`
-
-```sql
--- ============================================
--- RLS POLICIES: companies
--- ============================================

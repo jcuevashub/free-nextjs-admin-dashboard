@@ -17,5 +17,5 @@ export async function signInAction(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect("/");
+  redirect("/onboarding");
 }

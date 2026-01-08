@@ -2,8 +2,8 @@ import SignUpForm from "@/components/auth/SignUpForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Crear cuenta | TailAdmin - Panel Next.js",
-  description: "Página de registro en el panel TailAdmin",
+  title: "Crear cuenta | Fintech RD - Panel Next.js",
+  description: "Página de registro en el panel Fintech RD",
   // other metadata
 };
 

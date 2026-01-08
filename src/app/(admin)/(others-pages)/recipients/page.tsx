@@ -5,9 +5,9 @@ import type { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Beneficiarios | TailAdmin - Panel Next.js",
+  title: "Beneficiarios | Fintech RD - Panel Next.js",
   description:
-    "Listado de beneficiarios con tabla básica en el panel TailAdmin.",
+    "Listado de beneficiarios con tabla básica en el panel Fintech RD.",
 };
 
 export default function RecipientsPage() {

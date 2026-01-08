@@ -4,9 +4,9 @@ import CompanyMetaCard from "@/components/company-profile/CompanyMetaCard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Perfil de la empresa | TailAdmin - Panel Next.js",
+  title: "Perfil de la empresa | Fintech RD - Panel Next.js",
   description:
-    "Página de perfil de la empresa para el panel TailAdmin con Tailwind CSS y Next.js",
+    "Página de perfil de la empresa para el panel Fintech RD con Tailwind CSS y Next.js",
 };
 
 export default function CompanyProfile() {

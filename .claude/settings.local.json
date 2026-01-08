@@ -4,7 +4,20 @@
       "WebSearch",
       "Bash(ls:*)",
       "Bash(cat:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(git -C \"/Users/jacksoncuevas1/Documents/GitHub/free-nextjs-admin-dashboard\" log --oneline -20)",
+      "Bash(git -C \"/Users/jacksoncuevas1/Documents/GitHub/free-nextjs-admin-dashboard\" diff src/app/\\\\\\(full-width-pages\\\\\\)/\\\\\\(auth\\\\\\)/signin/actions.ts)",
+      "Bash(tree:*)",
+      "Bash(git -C \"/Users/jacksoncuevas1/Documents/GitHub/free-nextjs-admin-dashboard\" log --all --oneline --grep=\"onboarding\\\\|Arquitectura\")",
+      "Bash(git -C \"/Users/jacksoncuevas1/Documents/GitHub/free-nextjs-admin-dashboard\" show d5a2eed --stat)",
+      "Bash(git -C \"/Users/jacksoncuevas1/Documents/GitHub/free-nextjs-admin-dashboard\" diff --cached)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(supabase migration list:*)",
+      "Bash(supabase migration repair:*)",
+      "Bash(supabase db remote psql:*)",
+      "Bash(supabase db push:*)",
+      "Bash(python3:*)"
     ]
   }
 }

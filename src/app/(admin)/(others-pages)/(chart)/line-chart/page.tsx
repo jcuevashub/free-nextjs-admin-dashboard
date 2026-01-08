@@ -5,9 +5,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Gráfico de líneas | TailAdmin - Panel Next.js",
+  title: "Gráfico de líneas | Fintech RD - Panel Next.js",
   description:
-    "Página de gráfico de líneas para el panel TailAdmin con Tailwind CSS y Next.js",
+    "Página de gráfico de líneas para el panel Fintech RD con Tailwind CSS y Next.js",
 };
 export default function LineChart() {
   return (

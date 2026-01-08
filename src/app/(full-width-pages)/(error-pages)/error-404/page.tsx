@@ -5,9 +5,9 @@ import Link from "next/link";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Error 404 | TailAdmin - Panel Next.js",
+  title: "Error 404 | Fintech RD - Panel Next.js",
   description:
-    "Página de error 404 para el panel TailAdmin con Tailwind CSS y Next.js",
+    "Página de error 404 para el panel Fintech RD con Tailwind CSS y Next.js",
 };
 
 export default function Error404() {
@@ -47,7 +47,7 @@ export default function Error404() {
       </div>
       {/* <!-- Footer --> */}
       <p className="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
-        &copy; {new Date().getFullYear()} - TailAdmin
+        &copy; {new Date().getFullYear()} - Fintech RD
       </p>
     </div>
   );
