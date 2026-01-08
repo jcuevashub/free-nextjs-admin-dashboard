@@ -4,12 +4,21 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
+import { signInAction } from "@/app/(full-width-pages)/(auth)/signin/actions";
 import Link from "next/link";
 import React, { useState } from "react";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const formAction = async (formData: FormData) => {
+    const result = await signInAction(formData);
+    if (result?.error) {
+      setError(result.error);
+    }
+  };
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -32,13 +41,18 @@ export default function SignInForm() {
             </p>
           </div>
           <div>
-            <form>
+            <form action={formAction}>
               <div className="space-y-6">
                 <div>
                   <Label>
                     Correo electrónico <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" type="email" />
+                  <Input
+                    name="email"
+                    placeholder="info@gmail.com"
+                    type="email"
+                    required
+                  />
                 </div>
                 <div>
                   <Label>
@@ -46,8 +60,10 @@ export default function SignInForm() {
                   </Label>
                   <div className="relative">
                     <Input
+                      name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Introduce tu contraseña"
+                      required
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -82,6 +98,9 @@ export default function SignInForm() {
                 </div>
               </div>
             </form>
+            {error ? (
+              <p className="mt-3 text-sm text-error-500">{error}</p>
+            ) : null}
 
             <div className="mt-5">
               <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">

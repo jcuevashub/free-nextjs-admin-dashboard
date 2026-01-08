@@ -9,7 +9,7 @@ import {
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 
-interface Order {
+export interface Order {
   id: number;
   user: {
     image: string;
@@ -25,7 +25,7 @@ interface Order {
 }
 
 // Define the table data using the interface
-const tableData: Order[] = [
+const defaultTableData: Order[] = [
   {
     id: 1,
     user: {
@@ -110,7 +110,13 @@ const tableData: Order[] = [
   },
 ];
 
-export default function BasicTableOne() {
+type BasicTableProps = {
+  rows?: Order[];
+};
+
+export default function BasicTableOne({ rows }: BasicTableProps) {
+  const tableData = rows && rows.length > 0 ? rows : defaultTableData;
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
       <div className="max-w-full overflow-x-auto">

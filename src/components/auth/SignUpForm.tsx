@@ -3,12 +3,26 @@ import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
+import { signUpAction } from "@/app/(full-width-pages)/(auth)/signup/actions";
 import Link from "next/link";
 import React, { useState } from "react";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+   const [success, setSuccess] = useState(false);
+
+  const formAction = async (formData: FormData) => {
+    const result = await signUpAction(formData);
+    if (result?.error) {
+      setError(result.error);
+      setSuccess(false);
+    } else {
+      setError(null);
+      setSuccess(true);
+    }
+  };
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -31,7 +45,7 @@ export default function SignUpForm() {
             </p>
           </div>
           <div>
-            <form>
+            <form action={formAction}>
               <div className="space-y-5">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   {/* <!-- First Name --> */}
@@ -44,6 +58,7 @@ export default function SignUpForm() {
                       id="fname"
                       name="fname"
                       placeholder="Ingresa tu nombre"
+                      autoComplete="given-name"
                     />
                   </div>
                   {/* <!-- Last Name --> */}
@@ -56,6 +71,7 @@ export default function SignUpForm() {
                       id="lname"
                       name="lname"
                       placeholder="Ingresa tu apellido"
+                      autoComplete="family-name"
                     />
                   </div>
                 </div>
@@ -69,6 +85,8 @@ export default function SignUpForm() {
                     id="email"
                     name="email"
                     placeholder="Ingresa tu correo"
+                    required
+                    autoComplete="email"
                   />
                 </div>
                 {/* <!-- Password --> */}
@@ -80,6 +98,9 @@ export default function SignUpForm() {
                     <Input
                       placeholder="Ingresa tu contraseña"
                       type={showPassword ? "text" : "password"}
+                      name="password"
+                      required
+                      autoComplete="new-password"
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -119,6 +140,14 @@ export default function SignUpForm() {
                 </div>
               </div>
             </form>
+            {error ? (
+              <p className="mt-3 text-sm text-error-500">{error}</p>
+            ) : null}
+            {success ? (
+              <p className="mt-3 text-sm text-success-600">
+                Te enviamos un correo para confirmar tu cuenta. Revisa tu bandeja y vuelve para iniciar sesión.
+              </p>
+            ) : null}
 
             <div className="mt-5">
               <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
