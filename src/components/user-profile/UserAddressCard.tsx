@@ -37,7 +37,7 @@ export default function UserAddressCard() {
                   City/State
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Phoenix, Arizona, United States.
+                  DN, Santo Doming, República Dominicana.
                 </p>
               </div>
 
@@ -104,7 +104,7 @@ export default function UserAddressCard() {
 
                 <div>
                   <Label>City/State</Label>
-                  <Input type="text" defaultValue="Arizona, United States." />
+                  <Input type="text" defaultValue="DN, Santo Doming, República Dominicana." />
                 </div>
 
                 <div>
@@ -113,8 +113,8 @@ export default function UserAddressCard() {
                 </div>
 
                 <div>
-                  <Label>TAX ID</Label>
-                  <Input type="text" defaultValue="AS4568384" />
+                  <Label>RNC</Label>
+                  <Input type="text" defaultValue="132-57407-9" />
                 </div>
               </div>
             </div>

@@ -6,15 +6,15 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Buttons | TailAdmin - Next.js Dashboard Template",
+  title: "Botones | TailAdmin - Panel Next.js",
   description:
-    "This is Next.js Buttons page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "Página de botones para el panel TailAdmin con Tailwind CSS y Next.js",
 };
 
 export default function Buttons() {
   return (
     <div>
-      <PageBreadcrumb pageTitle="Buttons" />
+      <PageBreadcrumb pageTitle="Botones" />
       <div className="space-y-5 sm:space-y-6">
         {/* Primary Button */}
         <ComponentCard title="Primary Button">

@@ -5,16 +5,16 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Line Chart | TailAdmin - Next.js Dashboard Template",
+  title: "Gráfico de líneas | TailAdmin - Panel Next.js",
   description:
-    "This is Next.js Line Chart page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "Página de gráfico de líneas para el panel TailAdmin con Tailwind CSS y Next.js",
 };
 export default function LineChart() {
   return (
     <div>
-      <PageBreadcrumb pageTitle="Line Chart" />
+      <PageBreadcrumb pageTitle="Gráfico de líneas" />
       <div className="space-y-6">
-        <ComponentCard title="Line Chart 1">
+        <ComponentCard title="Gráfico de líneas 1">
           <LineChartOne />
         </ComponentCard>
       </div>
