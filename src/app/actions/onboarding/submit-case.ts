@@ -57,11 +57,8 @@ export async function submitCaseAction(
 
     // Validate required steps are completed
     const requiredSteps = [
-      'account_selection',
       'company_info',
-      'company_address',
       'ownership',
-      'identity_verification',
       'documents',
       'expected_activity',
       'follow_up',

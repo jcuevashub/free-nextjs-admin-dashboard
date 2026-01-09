@@ -10,24 +10,41 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, Suspense } from 'react';
 import { saveStepAction } from '@/app/actions/onboarding/save-step';
+import Button from '@/components/ui/button/Button';
+import Input from '@/components/form/input/InputField';
+import MultiSelect from '@/components/form/MultiSelect';
 
 const steps = [
+  'Crear cuenta',
   'Información de la empresa',
-  'Dirección',
   'Propietarios',
-  'Verificación de identidad',
-  'Documentos',
+  'Documentos de la empresa',
+  'Actividad esperada',
+  'Seguimiento'
 ];
 
 function ExpectedActivityContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
   const [monthlyVolume, setMonthlyVolume] = useState('');
-  const [countries, setCountries] = useState('República Dominicana');
+  const [countries, setCountries] = useState<string[]>(['República Dominicana']);
   const [fundingSource, setFundingSource] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const countryOptions = [
+    { value: 'República Dominicana', text: 'República Dominicana', selected: false },
+    { value: 'Estados Unidos', text: 'Estados Unidos', selected: false },
+    { value: 'Canadá', text: 'Canadá', selected: false },
+    { value: 'México', text: 'México', selected: false },
+    { value: 'Puerto Rico', text: 'Puerto Rico', selected: false },
+    { value: 'España', text: 'España', selected: false },
+    { value: 'Colombia', text: 'Colombia', selected: false },
+    { value: 'Chile', text: 'Chile', selected: false },
+    { value: 'Argentina', text: 'Argentina', selected: false },
+    { value: 'Perú', text: 'Perú', selected: false },
+  ];
 
   const caseId = searchParams.get('caseId') || undefined;
   const companyId = searchParams.get('companyId') || undefined;
@@ -76,18 +93,20 @@ function ExpectedActivityContent() {
     <div className="min-h-screen bg-base-200 text-base-content flex flex-col">
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 8 de 10</p>
+        <p className="text-xl text-base-content/60">Paso 5 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
-          <aside className="md:w-56 flex-shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">8 / 10</p>
-            <nav className="space-y-2 text-sm">
+          <aside className="md:w-56 shrink-0 space-y-3">
+            <p className="text-xl font-medium text-primary">5 / 6</p>
+              <nav className="space-y-2 text-md">
               {steps.map((step, idx) => (
                 <div
                   key={step}
-                  className={`px-3 py-2 rounded-lg text-base-content/60`}
+                  className={`px-3 py-2 rounded-lg ${
+                    idx === 4 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                  }`}
                 >
                   {step}
                 </div>
@@ -107,8 +126,8 @@ function ExpectedActivityContent() {
 
               <div className="grid grid-cols-1 gap-4">
                 <label className="form-control w-full">
-                  <span className="label-text text-sm font-medium">Volumen mensual estimado</span>
-                  <input
+                  <span className="label-text text-md font-medium">Volumen mensual estimado</span>
+                  <Input
                     type="text"
                     required
                     className="input input-bordered w-full"
@@ -118,19 +137,17 @@ function ExpectedActivityContent() {
                   />
                 </label>
                 <label className="form-control w-full">
-                  <span className="label-text text-sm font-medium">Países con los que operas</span>
-                  <input
-                    type="text"
-                    required
-                    className="input input-bordered w-full"
-                    value={countries}
-                    onChange={(e) => setCountries(e.target.value)}
-                    placeholder="Rep. Dominicana, EE.UU., ... "
+                  <span className="label-text text-md font-medium">Países con los que operas</span>
+                  <MultiSelect
+                    label="Puedes seleccionar varios países."
+                    options={countryOptions}
+                    defaultSelected={["República Dominicana", "Estados Unidos"]}
+                    onChange={(values) => setSelectedValues(values)}
                   />
                 </label>
                 <label className="form-control w-full">
-                  <span className="label-text text-sm font-medium">Origen de fondos</span>
-                  <input
+                  <span className="label-text text-md font-medium">Origen de fondos</span>
+                  <Input
                     type="text"
                     required
                     className="input input-bordered w-full"
@@ -144,7 +161,7 @@ function ExpectedActivityContent() {
               {/* Error message */}
               {error && (
                 <div className="p-4 bg-error/10 border border-error rounded-lg">
-                  <p className="text-sm text-error">{error}</p>
+                  <p className="text-md text-error">{error}</p>
                 </div>
               )}
 
@@ -153,9 +170,9 @@ function ExpectedActivityContent() {
                 <button type="button" className="btn btn-ghost btn-sm" onClick={handleBack} disabled={loading}>
                   Atrás
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+                <Button className="btn btn-primary" disabled={loading}>
                   {loading ? 'Guardando...' : 'Siguiente'}
-                </button>
+                </Button>
               </div>
             </form>
           </section>

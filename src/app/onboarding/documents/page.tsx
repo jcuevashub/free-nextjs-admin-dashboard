@@ -22,13 +22,17 @@ interface DocumentStatus {
   url?: string;
   socureStatus?: string;
   confidence?: number;
+  error?: string | null;
 }
 
 
 const steps = [
+  'Crear cuenta',
   'Información de la empresa',
   'Propietarios',
   'Documentos de la empresa',
+  'Actividad esperada',
+  'Seguimiento'
 ];
 
 const REQUIRED_DOCUMENTS = [
@@ -139,6 +143,16 @@ function DocumentsContent() {
     }
   };
 
+  const handleRemove = (key: string) => {
+    setDocuments((prev) => ({
+      ...prev,
+      [key]: { uploaded: false, url: undefined, socureStatus: undefined, confidence: undefined },
+    }));
+    if (fileInputs.current[key]) {
+      fileInputs.current[key]!.value = '';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -161,7 +175,7 @@ function DocumentsContent() {
 
   const handleBack = () => {
     const params = new URLSearchParams(searchParams.toString());
-    router.push(`/onboarding/identity-verification?${params.toString()}`);
+    router.push(`/onboarding/ownership?${params.toString()}`);
   };
 
   const getUploadedCount = () => {
@@ -173,20 +187,20 @@ function DocumentsContent() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-xl text-base-content/60">Paso 3 de 6</p>
+        <p className="text-xl text-base-content/60">Paso 4 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
           <aside className="md:w-56 shrink-0 space-y-3">
-            <p className="text-xl font-medium text-primary">3 / 6</p>
+            <p className="text-xl font-medium text-primary">4 / 6</p>
             <nav className="space-y-2 text-md">
               {steps.map((step, idx) => (
                 <div
                   key={step}
                   className={`px-3 py-2 rounded-lg ${
-                    idx === 2 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                    idx === 3 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
                   }`}
                 >
                   {step}
@@ -237,24 +251,47 @@ function DocumentsContent() {
                           <p className="text-xs text-base-content/60 mt-1">{doc.description}</p>
                         </div>
 
-                        {/* Upload button */}
-                        {!status.uploaded && !isUploading && (
-                          <Button
-                            onClick={() => triggerFileInput(doc.key)}
-                            className="btn btn-primary btn-sm"
-                          >
-                            Subir
-                          </Button>
-                        )}
-                      </div>
-
-                      {/* Uploading status */}
-                      {isUploading && (
-                        <div className="flex items-center gap-2text-md text-info">
-                          <div className="loading loading-spinner loading-xs"></div>
-                          <span>Subiendo y verificando...</span>
+                        {/* Upload / remove actions */}
+                        <div className="flex items-center gap-2">
+                          {!status.uploaded && !isUploading && (
+                            <Button
+                              onClick={() => triggerFileInput(doc.key)}
+                              className="btn btn-primary btn-sm"
+                            >
+                              Subir
+                            </Button>
+                          )}
+                          {isUploading && (
+                            <div className="flex items-center gap-2 text-info text-sm">
+                              <div className="loading loading-spinner loading-xs"></div>
+                              <span>Subiendo...</span>
+                            </div>
+                          )}
+                          {status.uploaded && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemove(doc.key)}
+                              className="inline-flex items-center gap-1 text-error hover:text-error/80 text-sm"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                              Eliminar
+                            </button>
+                          )}
                         </div>
-                      )}
+                      </div>
 
                       {/* Uploaded status */}
                       {status.uploaded && (

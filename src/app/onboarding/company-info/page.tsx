@@ -21,9 +21,12 @@ import TextArea from '@/components/form/input/TextArea';
 import Button from '@/components/ui/button/Button';
 
 const steps = [
+  'Crear cuenta',
   'Información de la empresa',
   'Propietarios',
   'Documentos de la empresa',
+  'Actividad esperada',
+  'Seguimiento'
 ];
 
 function CompanyInfoContent() {
@@ -57,111 +60,110 @@ function CompanyInfoContent() {
     setLoading(true);
     setError(null);
     setSanctionsWarning(null);
-    router.push(`/onboarding/ownership`);
 
-    // try {
-    //   // Step 1: Validate form data with Zod
-    //   const validation = companyInfoSchema.safeParse({
-    //     companyName,
-    //     rnc,
-    //     phone,
-    //     industry,
-    //     description,
-    //     website,
-          // addressLine1,
-          // addressLine2: addressLine2 || undefined,
-          // city,
-          // province,
-          // postalCode: postalCode || undefined,
-          // country,
-    //   });
+    try {
+      // Step 1: Validate form data with Zod
+      const validation = companyInfoSchema.safeParse({
+        companyName,
+        rnc,
+        phone,
+        industry,
+        description,
+        website,
+          addressLine1,
+          addressLine2: addressLine2 || undefined,
+          city,
+          province,
+          postalCode: postalCode || undefined,
+          country,
+      });
 
-    //   if (!validation.success) {
-    //     const firstError = validation.error;
-    //     setError(firstError.message);
-    //     setLoading(false);
-    //     return;
-    //   }
+      if (!validation.success) {
+        const firstError = validation.error;
+        setError(firstError.message);
+        setLoading(false);
+        return;
+      }
 
-    //   // Step 2: Validate RNC uniqueness
-    //   const validateResult = await validateOnboardingAction({ rnc });
+      // Step 2: Validate RNC uniqueness
+      const validateResult = await validateOnboardingAction({ rnc });
 
-    //   if (!validateResult.success) {
-    //     if (validateResult.conflicts?.rnc) {
-    //       setError('Ya existe una empresa registrada con este RNC');
-    //     } else {
-    //       setError(validateResult.message || 'Error al validar RNC');
-    //     }
-    //     setLoading(false);
-    //     return;
-    //   }
+      if (!validateResult.success) {
+        if (validateResult.conflicts?.rnc) {
+          setError('Ya existe una empresa registrada con este RNC');
+        } else {
+          setError(validateResult.message || 'Error al validar RNC');
+        }
+        setLoading(false);
+        return;
+      }
 
-    //   // Step 3: Save company info
-    //   const saveResult = await saveStepAction({
-    //     step: 'company_info',
-    //     caseId,
-    //     data: {
-    //       companyName,
-    //       rnc,
-    //       phone,
-    //       industry,
-    //       description,
-    //       website,
-    //       country: 'DO',
-    //     },
-    //   });
+      // Step 3: Save company info
+      const saveResult = await saveStepAction({
+        step: 'company_info',
+        caseId,
+        data: {
+          companyName,
+          rnc,
+          phone,
+          industry,
+          description,
+          website,
+          country: 'DO',
+          addressLine1,
+          addressLine2,
+          city,
+          province,
+          postalCode,
+          accountPreference,
+        },
+      });
 
-    //   if (!saveResult.success) {
-    //     setError(saveResult.error || 'Error al guardar información');
-    //     setLoading(false);
-    //     return;
-    //   }
+      if (!saveResult.success) {
+        setError(saveResult.error || 'Error al guardar información');
+        setLoading(false);
+        return;
+      }
 
-    //   // Step 4: Screen company against OFAC/Sanctions lists
-    //   setScreening(true);
-    //   const screeningResult = await screenSanctionsAction({
-    //     caseId: saveResult.caseId!,
-    //     entityName: companyName,
-    //     entityType: 'company',
-    //     entityIdentifier: rnc,
-    //   });
+      // Step 4: Screen company against OFAC/Sanctions lists
+      setScreening(true);
+      const screeningResult = await screenSanctionsAction({
+        caseId: saveResult.caseId!,
+        entityName: companyName,
+        entityType: 'company',
+        entityIdentifier: rnc,
+      });
 
-    //   if (!screeningResult.success) {
-    //     console.error('Sanctions screening error:', screeningResult.error);
-    //     // Don't fail the flow, just log and continue
-    //   } else if (screeningResult.isOnSanctionsList) {
-    //     // OFAC match - this should auto-reject
-    //     setError('Esta empresa aparece en listas de sanciones internacionales y no puede ser aprobada.');
-    //     setLoading(false);
-    //     setScreening(false);
-    //     return;
-    //   } else if (screeningResult.isPEP) {
-    //     // PEP found - show warning but allow to continue
-    //     setSanctionsWarning('Se identificó como Persona Políticamente Expuesta (PEP). Tu solicitud será revisada manualmente.');
-    //   }
+      if (!screeningResult.success) {
+        console.error('Sanctions screening error:', screeningResult.error);
+        // Don't fail the flow, just log and continue
+      } else if (screeningResult.isOnSanctionsList) {
+        // OFAC match - this should auto-reject
+        setError('Esta empresa aparece en listas de sanciones internacionales y no puede ser aprobada.');
+        setLoading(false);
+        setScreening(false);
+        return;
+      } else if (screeningResult.isPEP) {
+        // PEP found - show warning but allow to continue
+        setSanctionsWarning('Se identificó como Persona Políticamente Expuesta (PEP). Tu solicitud será revisada manualmente.');
+      }
 
-    //   setScreening(false);
+      setScreening(false);
 
-    //   // Step 5: Navigate to next step
-    //   const params = new URLSearchParams(searchParams.toString());
-    //   params.set('caseId', saveResult.caseId!);
-    //   params.set('companyId', saveResult.companyId!);
-    //   params.set('companyName', companyName);
-    //   params.set('rnc', rnc);
-    //   params.set('phone', phone);
-    //   params.set('industry', industry);
-    //   router.push(`/onboarding/company-address?${params.toString()}`);
+      // Step 5: Navigate to next step
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('caseId', saveResult.caseId!);
+      params.set('companyId', saveResult.companyId!);
 
-    //   params.set('caseId', result.caseId!);
-    //   if (result.companyId) params.set('companyId', result.companyId);
-    //   router.push(`/onboarding/ownership?${params.toString()}`);
+      if (saveResult.companyId) params.set('companyId', saveResult.companyId);
+      router.push(`/onboarding/ownership?${params.toString()}`);
 
-    // } catch (err) {
-    //   console.error('Error in company-info:', err);
-    //   setError(err instanceof Error ? err.message : 'Error inesperado');
-    //   setLoading(false);
-    //   setScreening(false);
-    // }
+    } catch (err) {
+      console.error('Error in company-info:', err);
+      setError(err instanceof Error ? err.message : 'Error inesperado');
+      setLoading(false);
+      setScreening(false);
+    }
   };
 
   return (
@@ -256,7 +258,7 @@ function CompanyInfoContent() {
                       required
                       type="text"
                       className="input input-bordered w-full"
-                      defaultValue={industry}
+                      value={industry}
                       onChange={(e) => setIndustry(e.target.value)}
                       placeholder="Tecnología, Retail..."
                     />
@@ -269,7 +271,7 @@ function CompanyInfoContent() {
                   <Input
                     type="url"
                     className="input input-bordered w-full"
-                    defaultValue={website}
+                    value={website}
                     onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://miempresa.com"
                   />

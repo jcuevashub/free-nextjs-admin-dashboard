@@ -55,9 +55,7 @@ export async function resumeOnboardingAction(): Promise<ResumeCaseResult> {
     const stepRoutes: Record<string, string> = {
       start: '/onboarding/start',
       company_info: '/onboarding/company-info',
-      company_address: '/onboarding/company-address',
       ownership: '/onboarding/ownership',
-      identity_verification: '/onboarding/identity-verification',
       documents: '/onboarding/documents',
       expected_activity: '/onboarding/expected-activity',
       follow_up: '/onboarding/follow-up',

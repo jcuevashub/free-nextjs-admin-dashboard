@@ -13,9 +13,7 @@ import { revalidatePath } from 'next/cache';
 type OnboardingStep =
   | 'start'
   | 'company_info'
-  | 'company_address'
   | 'ownership'
-  | 'identity_verification'
   | 'documents'
   | 'expected_activity'
   | 'follow_up';
@@ -60,9 +58,7 @@ export async function saveStepAction(input: SaveStepInput): Promise<SaveStepResu
     const stepFieldMap: Record<OnboardingStep, Record<string, any>> = {
       start: {  },
       company_info: { company_data: data },
-      company_address: { address_data: data },
       ownership: { ownership_data: data },
-      identity_verification: {},
       documents: {},
       expected_activity: { activity_data: data },
       follow_up: { followup_data: data },
@@ -152,6 +148,23 @@ export async function saveStepAction(input: SaveStepInput): Promise<SaveStepResu
 
       companyId = company.id;
 
+      const { data: caseData } = await supabase
+        .from('onboarding_cases')
+        .select('company_id')
+        .eq('id', currentCaseId)
+        .single();
+
+      if (caseData?.company_id) {
+        await supabase
+          .from('companies')
+          .update({
+            address: data.address,
+            city: data.city,
+            country: data.country || 'DO',
+          })
+          .eq('id', companyId);
+      }
+
       // Link company to onboarding case
       await supabase
         .from('onboarding_cases')
@@ -177,24 +190,24 @@ export async function saveStepAction(input: SaveStepInput): Promise<SaveStepResu
     }
 
     // Special handling: Update company address for company_address step
-    if (step === 'company_address') {
-      const { data: caseData } = await supabase
-        .from('onboarding_cases')
-        .select('company_id')
-        .eq('id', currentCaseId)
-        .single();
+    // if (step === 'company_address') {
+    //   const { data: caseData } = await supabase
+    //     .from('onboarding_cases')
+    //     .select('company_id')
+    //     .eq('id', currentCaseId)
+    //     .single();
 
-      if (caseData?.company_id) {
-        await supabase
-          .from('companies')
-          .update({
-            address: data.address,
-            city: data.city,
-            country: data.country || 'DO',
-          })
-          .eq('id', caseData.company_id);
-      }
-    }
+    //   if (caseData?.company_id) {
+    //     await supabase
+    //       .from('companies')
+    //       .update({
+    //         address: data.address,
+    //         city: data.city,
+    //         country: data.country || 'DO',
+    //       })
+    //       .eq('id', caseData.company_id);
+    //   }
+    // }
 
     revalidatePath('/onboarding');
 

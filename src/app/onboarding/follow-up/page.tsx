@@ -10,13 +10,16 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, Suspense } from 'react';
 import { submitCaseAction } from '@/app/actions/onboarding/submit-case';
+import TextArea from '@/components/form/input/TextArea';
+import Button from '@/components/ui/button/Button';
 
 const steps = [
+  'Crear cuenta',
   'Información de la empresa',
-  'Dirección',
   'Propietarios',
-  'Verificación de identidad',
-  'Documentos',
+  'Documentos de la empresa',
+  'Actividad esperada',
+  'Seguimiento'
 ];
 
 function FollowUpContent() {
@@ -64,16 +67,21 @@ function FollowUpContent() {
     <div className="min-h-screen bg-base-200 text-base-content flex flex-col">
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 9 de 10</p>
+        <p className="text-xl text-base-content/60">Paso 6 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
-          <aside className="md:w-56 flex-shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">9 / 10</p>
-            <nav className="space-y-2 text-sm">
+          <aside className="md:w-56 shrink-0 space-y-3">
+            <p className="text-md font-medium text-primary">6 / 6</p>
+            <nav className="space-y-2 text-md">
               {steps.map((step, idx) => (
-                <div key={step} className="px-3 py-2 rounded-lg text-base-content/60">
+                <div
+                  key={step}
+                  className={`px-3 py-2 rounded-lg ${
+                    idx === 5 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                  }`}
+                >
                   {step}
                 </div>
               ))}
@@ -91,19 +99,19 @@ function FollowUpContent() {
               </div>
 
               <label className="form-control w-full">
-                <span className="label-text text-sm font-medium">Información adicional (opcional)</span>
-                <textarea
+                <span className="label-text text-md font-medium">Información adicional (opcional)</span>
+                <TextArea
                   className="textarea textarea-bordered w-full"
                   rows={5}
                   value={additionalInfo}
-                  onChange={(e) => setAdditionalInfo(e.target.value)}
+                  onChange={(value) => setAdditionalInfo(value)}
                   placeholder="Describe casos de uso específicos, clientes clave, certificaciones o cualquier detalle relevante para la revisión..."
                 />
               </label>
 
               {/* Info box */}
               <div className="p-4 bg-info/10 border border-info/30 rounded-lg">
-                <p className="text-sm text-base-content/80">
+                <p className="text-md text-base-content/80">
                   <strong>Siguiente paso:</strong> Tu solicitud será enviada a revisión. Aplicaremos
                   verificaciones automáticas basadas en los datos proporcionados.
                 </p>
@@ -112,7 +120,7 @@ function FollowUpContent() {
               {/* Error message */}
               {error && (
                 <div className="p-4 bg-error/10 border border-error rounded-lg">
-                  <p className="text-sm text-error">{error}</p>
+                  <p className="text-md text-error">{error}</p>
                 </div>
               )}
 
@@ -121,9 +129,9 @@ function FollowUpContent() {
                 <button type="button" className="btn btn-ghost btn-sm" onClick={handleBack} disabled={loading}>
                   Atrás
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+                <Button  className="btn btn-primary" disabled={loading}>
                   {loading ? 'Enviando...' : 'Enviar a Revisión'}
-                </button>
+                </Button>
               </div>
             </form>
           </section>

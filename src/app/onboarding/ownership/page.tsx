@@ -18,13 +18,16 @@ import { formatCedula, formatRnc } from '@/lib/utils';
 import Input from '@/components/form/input/InputField';
 import Checkbox from '@/components/form/input/Checkbox';
 import Button from '@/components/ui/button/Button';
-import DropzoneComponent from '@/components/form/form-elements/DropZone';
 
 const steps = [
+  'Crear cuenta',
   'Información de la empresa',
   'Propietarios',
   'Documentos de la empresa',
+  'Actividad esperada',
+  'Seguimiento'
 ];
+
 
 function OwnershipContent() {
   const router = useRouter();
@@ -33,7 +36,6 @@ function OwnershipContent() {
   // Form state
   const [ownerName, setOwnerName] = useState(searchParams.get('ownerName') ?? '');
   const [ownerId, setOwnerId] = useState(searchParams.get('ownerId') ?? '');
-  const [rnc, setRnc] = useState(searchParams.get('rnc') ?? '');
   const [ownershipPct, setOwnershipPct] = useState(searchParams.get('ownershipPct') ?? '25');
   const [pep, setPep] = useState(searchParams.get('pep') === 'true');
   const [dateOfBirth, setDateOfBirth] = useState(searchParams.get('dateOfBirth') ?? '');
@@ -52,92 +54,86 @@ function OwnershipContent() {
     setLoading(true);
     setError(null);
     setSanctionsWarning(null);
-    router.push(`/onboarding/documents`);
-    // try {
-    //   // Step 1: Validate form data with Zod
-    //   const validation = ownershipSchema.safeParse({
-    //     ownerName,
-    //     ownerId,
-    //     rnc,
-    //     ownershipPct: parseFloat(ownershipPct),
-    //     pep,
-    //     dateOfBirth: dateOfBirth || undefined,
-    //     position: position || undefined,
-    //   });
 
-    //   if (!validation.success) {
-    //     const firstError = validation.error;
-    //     setError(firstError.message);
-    //     setLoading(false);
-    //     return;
-    //   }
+    try {
+      // Step 1: Validate form data with Zod
+      const validation = ownershipSchema.safeParse({
+        ownerName,
+        ownerId: ownerId.replaceAll('-', ''),
+        ownershipPct: parseFloat(ownershipPct),
+        pep,
+        dateOfBirth: dateOfBirth || undefined,
+        position: position || undefined,
+      });
 
-    //   // Step 2: Save ownership data
-    //   const saveResult = await saveStepAction({
-    //     step: 'ownership',
-    //     caseId,
-    //     data: {
-    //       ownerName,
-    //       ownerId,
-    //       rnc,
-    //       ownershipPct: parseFloat(ownershipPct),
-    //       pep,
-    //       dateOfBirth,
-    //       position,
-    //     },
-    //   });
+      if (!validation.success) {
+        const firstError = validation.error;
+        setError(firstError.message);
+        setLoading(false);
+        return;
+      }
 
-    //   if (!saveResult.success) {
-    //     setError(saveResult.error || 'Error al guardar información');
-    //     setLoading(false);
-    //     return;
-    //   }
+      // Step 2: Save ownership data
+      const saveResult = await saveStepAction({
+        step: 'ownership',
+        caseId,
+        data: {
+          ownerName,
+          ownerId,
+          ownershipPct: parseFloat(ownershipPct),
+          pep,
+          dateOfBirth,
+          position,
+        },
+      });
 
-    //   // Step 3: Screen owner against OFAC/PEP lists
-    //   setScreening(true);
-    //   const screeningResult = await screenSanctionsAction({
-    //     caseId: saveResult.caseId!,
-    //     entityName: ownerName,
-    //     entityType: 'individual',
-    //     entityIdentifier: ownerId,
-    //     dateOfBirth: dateOfBirth || undefined,
-    //   });
+      if (!saveResult.success) {
+        setError(saveResult.error || 'Error al guardar información');
+        setLoading(false);
+        return;
+      }
 
-    //   if (!screeningResult.success) {
-    //     console.error('Sanctions screening error:', screeningResult.error);
-    //     // Don't fail the flow, just log and continue
-    //   } else if (screeningResult.isOnSanctionsList) {
-    //     // OFAC match - this should auto-reject
-    //     setError(
-    //       'Esta persona aparece en listas de sanciones internacionales y no puede ser aprobada.'
-    //     );
-    //     setLoading(false);
-    //     setScreening(false);
-    //     return;
-    //   } else if (screeningResult.isPEP || pep) {
-    //     // PEP found - show warning but allow to continue
-    //     setSanctionsWarning(
-    //       'Se identificó como Persona Políticamente Expuesta (PEP). Tu solicitud será revisada manualmente.'
-    //     );
-    //   }
+      // Step 3: Screen owner against OFAC/PEP lists
+      setScreening(true);
+      const screeningResult = await screenSanctionsAction({
+        caseId: saveResult.caseId!,
+        entityName: ownerName,
+        entityType: 'individual',
+        entityIdentifier: ownerId,
+        dateOfBirth: dateOfBirth || undefined,
+      });
 
-    //   setScreening(false);
+      if (!screeningResult.success) {
+        console.error('Sanctions screening error:', screeningResult.error);
+        // Don't fail the flow, just log and continue
+      } else if (screeningResult.isOnSanctionsList) {
+        // OFAC match - this should auto-reject
+        setError(
+          'Esta persona aparece en listas de sanciones internacionales y no puede ser aprobada.'
+        );
+        setLoading(false);
+        setScreening(false);
+        return;
+      } else if (screeningResult.isPEP || pep) {
+        // PEP found - show warning but allow to continue
+        setSanctionsWarning(
+          'Se identificó como Persona Políticamente Expuesta (PEP). Tu solicitud será revisada manualmente.'
+        );
+      }
 
-    //   // Step 4: Navigate to identity verification (NEW - Socure ID+)
-    //   const params = new URLSearchParams(searchParams.toString());
-    //   params.set('caseId', saveResult.caseId!);
-    //   params.set('ownerName', ownerName);
-    //   params.set('nationalId', ownerId);
-    //   params.set('dateOfBirth', dateOfBirth);
-    //   params.set('firstName', ownerName.split(' ')[0] || '');
-    //   params.set('lastName', ownerName.split(' ').slice(1).join(' ') || '');
-    //   router.push(`/onboarding/identity-verification?${params.toString()}`);
-    // } catch (err) {
-    //   console.error('Error in ownership:', err);
-    //   setError(err instanceof Error ? err.message : 'Error inesperado');
-    //   setLoading(false);
-    //   setScreening(false);
-    // }
+      setScreening(false);
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('caseId', saveResult.caseId!);
+      params.set('companyId', companyId!);
+
+      router.push(`/onboarding/documents?${params.toString()}`);
+    } catch (err) {
+      console.error('Error in ownership:', err);
+      setError(err instanceof Error ? err.message : 'Error inesperado');
+      setLoading(false);
+      setScreening(false);
+    }
   };
 
   const handleBack = () => {
