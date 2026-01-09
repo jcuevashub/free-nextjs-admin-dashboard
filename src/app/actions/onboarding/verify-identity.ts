@@ -27,7 +27,7 @@ interface VerifyIdentityInput {
 
 interface VerifyIdentityResult {
   success: boolean;
-  decision?: 'accept' | 'reject' | 'review';
+  decision?: 'accept' | 'reject' | 'review' | 'refer' | 'resubmit';
   livenessScore?: number;
   faceMatch?: boolean;
   fraudScore?: number;

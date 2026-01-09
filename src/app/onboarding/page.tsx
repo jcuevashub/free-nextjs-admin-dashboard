@@ -18,46 +18,38 @@ export default function OnboardingPage() {
   useEffect(() => {
     async function determineRoute() {
       try {
-        // Get the current onboarding case and determine where to go
         const result = await resumeOnboardingAction();
 
         if (!result.success) {
-          // No case exists or error - redirect to start
-          router.push('/onboarding/start');
+          router.push('/onboarding/company-info');
           return;
         }
 
-        // Redirect based on status
         switch (result.status) {
           case 'approved':
-            // Already approved - go to dashboard
             router.push('/');
             break;
 
           case 'rejected':
           case 'pending_review':
-            // Show completion page with status
             router.push('/onboarding/complete');
             break;
 
           case 'requires_update':
           case 'in_progress':
           case 'draft':
-            // Resume at current step
             const nextStep = result.nextStep || 'start';
             router.push(`/onboarding/${nextStep}`);
             break;
 
           default:
-            // Unknown status - go to start
-            router.push('/onboarding/start');
+            router.push('/onboarding/company-info');
         }
       } catch (err) {
         console.error('Error determining onboarding route:', err);
         setError('Error al determinar el paso de onboarding');
-        // Fallback to start
         setTimeout(() => {
-          router.push('/onboarding/start');
+          router.push('/onboarding/company-info');
         }, 2000);
       }
     }

@@ -10,15 +10,17 @@
  */
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { validateOnboardingAction } from '@/app/actions/onboarding/validate';
 import { saveStepAction } from '@/app/actions/onboarding/save-step';
 import { screenSanctionsAction } from '@/app/actions/onboarding/screen-sanctions';
 import { companyInfoSchema } from '@/lib/validations/onboarding';
 import { formatRNC } from '@/lib/utils';
+import Input from '@/components/form/input/InputField';
+import TextArea from '@/components/form/input/TextArea';
+import Button from '@/components/ui/button/Button';
 
 const steps = [
-  'Selección de cuenta',
   'Información de la empresa',
   'Dirección',
   'Propietarios',
@@ -26,7 +28,7 @@ const steps = [
   'Documentos',
 ];
 
-export default function CompanyInfoPage() {
+function CompanyInfoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -51,7 +53,6 @@ export default function CompanyInfoPage() {
     setLoading(true);
     setError(null);
     setSanctionsWarning(null);
-
     try {
       // Step 1: Validate form data with Zod
       const validation = companyInfoSchema.safeParse({
@@ -65,7 +66,7 @@ export default function CompanyInfoPage() {
       });
 
       if (!validation.success) {
-        const firstError = validation.error.errors[0];
+        const firstError = validation.error;
         setError(firstError.message);
         setLoading(false);
         return;
@@ -157,20 +158,20 @@ export default function CompanyInfoPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 3 de 10</p>
+        <p className="text-sm text-base-content/60">Paso 1 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
-          <aside className="md:w-56 flex-shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">3 / 10</p>
+          <aside className="md:w-56 shrink-0 space-y-3">
+            <p className="text-sm font-medium text-primary">1 / 6</p>
             <nav className="space-y-2 text-sm">
               {steps.map((step, idx) => (
                 <div
                   key={step}
                   className={`px-3 py-2 rounded-lg ${
-                    idx === 1 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                    idx === 0 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
                   }`}
                 >
                   {step}
@@ -196,11 +197,11 @@ export default function CompanyInfoPage() {
                 {/* Company Name */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">Nombre legal *</span>
-                  <input
-                    type="text"
+                  <Input
                     required
+                    type="text"
                     className="input input-bordered w-full"
-                    value={companyName}
+                    defaultValue={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     placeholder="Empresa SRL"
                   />
@@ -209,11 +210,11 @@ export default function CompanyInfoPage() {
                 {/* RNC */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">RNC *</span>
-                  <input
-                    type="text"
+                  <Input
                     required
+                    type="text"
                     className="input input-bordered w-full"
-                    value={rnc}
+                    defaultValue={rnc}
                     onChange={(e) => setRnc(formatRNC(e.target.value))}
                     placeholder="123-45678-9"
                   />
@@ -226,11 +227,11 @@ export default function CompanyInfoPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
                     <span className="label-text text-sm font-medium">Teléfono *</span>
-                    <input
-                      type="tel"
+                    <Input
                       required
+                      type="tel"
                       className="input input-bordered w-full"
-                      value={phone}
+                      defaultValue={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="(809) 000-0000"
                     />
@@ -238,10 +239,11 @@ export default function CompanyInfoPage() {
 
                   <label className="form-control w-full">
                     <span className="label-text text-sm font-medium">Industria</span>
-                    <input
+                    <Input
+                      required
                       type="text"
                       className="input input-bordered w-full"
-                      value={industry}
+                      defaultValue={industry}
                       onChange={(e) => setIndustry(e.target.value)}
                       placeholder="Tecnología, Retail..."
                     />
@@ -251,10 +253,10 @@ export default function CompanyInfoPage() {
                 {/* Website */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">Sitio web (opcional)</span>
-                  <input
+                  <Input
                     type="url"
                     className="input input-bordered w-full"
-                    value={website}
+                    defaultValue={website}
                     onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://miempresa.com"
                   />
@@ -263,11 +265,11 @@ export default function CompanyInfoPage() {
                 {/* Description */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">Descripción</span>
-                  <textarea
-                    className="textarea textarea-bordered w-full"
+                  <TextArea
+                    className="w-full"
                     rows={3}
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(value) => setDescription(value)}
                     placeholder="Describe qué hace tu empresa..."
                   />
                 </label>
@@ -301,22 +303,20 @@ export default function CompanyInfoPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
+                <Button
                   className="btn btn-ghost btn-sm"
                   onClick={handleBack}
                   disabled={loading || screening}
                 >
                   Atrás
-                </button>
+                </Button>
 
-                <button
-                  type="submit"
+                <Button
                   className="btn btn-primary"
                   disabled={loading || screening}
                 >
                   {loading || screening ? 'Procesando...' : 'Siguiente'}
-                </button>
+                </Button>
               </div>
             </form>
           </section>
@@ -324,4 +324,16 @@ export default function CompanyInfoPage() {
       </main>
     </div>
   );
+}
+
+export default function CompanyInfoPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <CompanyInfoContent />
+    </Suspense>
+  )
 }

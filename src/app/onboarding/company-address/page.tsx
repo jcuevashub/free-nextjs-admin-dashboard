@@ -8,11 +8,12 @@
  */
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { saveStepAction } from '@/app/actions/onboarding/save-step';
+import Input from '@/components/form/input/InputField';
+import Button from '@/components/ui/button/Button';
 
 const steps = [
-  'Selección de cuenta',
   'Información de la empresa',
   'Dirección',
   'Propietarios',
@@ -20,7 +21,7 @@ const steps = [
   'Documentos',
 ];
 
-export default function CompanyAddressPage() {
+function CompanyAddressContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -40,7 +41,6 @@ export default function CompanyAddressPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
       // Save address data
       const result = await saveStepAction({
@@ -83,19 +83,19 @@ export default function CompanyAddressPage() {
     <div className="min-h-screen bg-base-200 text-base-content flex flex-col">
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 4 de 10</p>
+        <p className="text-sm text-base-content/60">Paso 2 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
-          <aside className="md:w-56 flex-shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">4 / 10</p>
+          <aside className="md:w-56 shrink-0 space-y-3">
+            <p className="text-sm font-medium text-primary">2 / 6</p>
             <nav className="space-y-2 text-sm">
               {steps.map((step, idx) => (
                 <div
                   key={step}
                   className={`px-3 py-2 rounded-lg ${
-                    idx === 2 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                    idx === 1 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
                   }`}
                 >
                   {step}
@@ -118,11 +118,10 @@ export default function CompanyAddressPage() {
                 {/* Address Line 1 */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">Dirección *</span>
-                  <input
+                  <Input
                     type="text"
-                    required
                     className="input input-bordered w-full"
-                    value={addressLine1}
+                    defaultValue={addressLine1}
                     onChange={(e) => setAddressLine1(e.target.value)}
                     placeholder="Calle Principal #123"
                   />
@@ -131,10 +130,10 @@ export default function CompanyAddressPage() {
                 {/* Address Line 2 */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">Apartamento, suite, etc. (opcional)</span>
-                  <input
+                  <Input
                     type="text"
                     className="input input-bordered w-full"
-                    value={addressLine2}
+                    defaultValue={addressLine2}
                     onChange={(e) => setAddressLine2(e.target.value)}
                     placeholder="Apto 4B"
                   />
@@ -144,22 +143,20 @@ export default function CompanyAddressPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
                     <span className="label-text text-sm font-medium">Ciudad *</span>
-                    <input
+                    <Input
                       type="text"
-                      required
                       className="input input-bordered w-full"
-                      value={city}
+                      defaultValue={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Santo Domingo"
                     />
                   </label>
                   <label className="form-control w-full">
                     <span className="label-text text-sm font-medium">Provincia *</span>
-                    <input
+                    <Input
                       type="text"
-                      required
                       className="input input-bordered w-full"
-                      value={province}
+                      defaultValue={province}
                       onChange={(e) => setProvince(e.target.value)}
                       placeholder="Distrito Nacional"
                     />
@@ -170,22 +167,21 @@ export default function CompanyAddressPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
                     <span className="label-text text-sm font-medium">Código postal</span>
-                    <input
+                    <Input
                       type="text"
                       className="input input-bordered w-full"
-                      value={postalCode}
+                      defaultValue={postalCode}
                       onChange={(e) => setPostalCode(e.target.value)}
                       placeholder="10101"
                     />
                   </label>
                   <label className="form-control w-full">
                     <span className="label-text text-sm font-medium">País</span>
-                    <input
+                    <Input
                       type="text"
                       disabled
                       className="input input-bordered w-full"
-                      value="República Dominicana"
-                      readOnly
+                      defaultValue="República Dominicana"
                     />
                   </label>
                 </div>
@@ -200,17 +196,29 @@ export default function CompanyAddressPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-2">
-                <button type="button" className="btn btn-ghost btn-sm" onClick={handleBack} disabled={loading}>
+                <Button className="btn btn-ghost btn-sm" onClick={handleBack} disabled={loading}>
                   Atrás
-                </button>
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+                </Button>
+                <Button className="btn btn-primary" disabled={loading}>
                   {loading ? 'Guardando...' : 'Siguiente'}
-                </button>
+                </Button>
               </div>
             </form>
           </section>
         </div>
       </main>
     </div>
+  )
+}
+
+export default function CompanyAddressPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <CompanyAddressContent />
+    </Suspense>
   )
 }

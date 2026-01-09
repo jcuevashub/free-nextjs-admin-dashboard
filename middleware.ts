@@ -33,6 +33,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/signin') ||
     pathname.startsWith('/signup') ||
     pathname.startsWith('/onboarding') ||
+    pathname.startsWith('/welcome') ||
     pathname.startsWith('/error-404') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
@@ -63,7 +64,7 @@ export async function middleware(req: NextRequest) {
     // Check onboarding status (single query)
     const { data: onboardingCase, error: caseError } = await supabase
       .from('onboarding_cases')
-      .select('id, status, current_step')
+      .select('id, status, current_step, welcome_shown')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -74,7 +75,11 @@ export async function middleware(req: NextRequest) {
     // ============================================
     if (pathname.startsWith('/signin') || pathname.startsWith('/signup')) {
       if (onboardingCase?.status === 'approved') {
-        // Onboarding complete, redirect to dashboard
+        // Onboarding approved - check if they've seen welcome page
+        if (!onboardingCase.welcome_shown) {
+          return NextResponse.redirect(new URL('/welcome', req.url));
+        }
+        // Welcome page shown - redirect to dashboard
         return NextResponse.redirect(new URL('/', req.url));
       } else {
         // Onboarding not complete, redirect to onboarding start
@@ -118,13 +123,23 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL('/onboarding/complete', req.url));
       }
 
-      // Case 4: User has approved case
-      if (onboardingCase?.status === 'approved') {
-        // Allow access to dashboard - onboarding is complete
+      // Case 4: User has approved case but hasn't seen welcome page
+      if (onboardingCase?.status === 'approved' && !onboardingCase.welcome_shown) {
+        // First login after approval - redirect to welcome page
+        if (!pathname.startsWith('/welcome')) {
+          return NextResponse.redirect(new URL('/welcome', req.url));
+        }
+        // Allow access to welcome page
         return res;
       }
 
-      // Case 5: User has no onboarding case at all (new user)
+      // Case 5: User has approved case and has seen welcome page
+      if (onboardingCase?.status === 'approved' && onboardingCase.welcome_shown) {
+        // Full access to dashboard - onboarding complete
+        return res;
+      }
+
+      // Case 6: User has no onboarding case at all (new user)
       if (!onboardingCase) {
         // New user - redirect to start onboarding
         return NextResponse.redirect(new URL('/onboarding/start', req.url));

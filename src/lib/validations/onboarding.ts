@@ -12,9 +12,7 @@ import { isValidRNC, isValidCedula, isValidDominicanPhone } from '../utils';
  * Step 2: Account Selection
  */
 export const accountSelectionSchema = z.object({
-  accountPreference: z.enum(['peso', 'dolar', 'both'], {
-    required_error: 'Debes seleccionar un tipo de cuenta',
-  }),
+  accountPreference: z.enum(['peso', 'dolar', 'both']),
 });
 
 export type AccountSelectionInput = z.infer<typeof accountSelectionSchema>;
@@ -103,9 +101,7 @@ export const ownershipSchema = z.object({
     .number()
     .min(0, 'Porcentaje debe ser mayor o igual a 0')
     .max(100, 'Porcentaje debe ser menor o igual a 100'),
-  pep: z.boolean({
-    required_error: 'Debes indicar si es PEP',
-  }),
+  pep: z.boolean(),
   dateOfBirth: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha de nacimiento inválida. Formato: YYYY-MM-DD')
@@ -122,9 +118,7 @@ export type OwnershipInput = z.infer<typeof ownershipSchema>;
  * Step 6: Identity Verification
  */
 export const identityVerificationSchema = z.object({
-  documentType: z.enum(['cedula', 'passport'], {
-    required_error: 'Tipo de documento es requerido',
-  }),
+  documentType: z.enum(['cedula', 'passport']),
   documentNumber: z
     .string()
     .min(1, 'Número de documento es requerido')
@@ -141,9 +135,7 @@ export type IdentityVerificationInput = z.infer<typeof identityVerificationSchem
  * Step 7: Documents Upload
  */
 export const documentUploadSchema = z.object({
-  docType: z.enum(['rnc', 'constitutivo', 'cedula_front', 'cedula_back', 'ubo', 'address'], {
-    required_error: 'Tipo de documento es requerido',
-  }),
+  docType: z.enum(['rnc', 'constitutivo', 'cedula_front', 'cedula_back', 'ubo', 'address']),
   companyId: z.string().uuid('Company ID inválido').optional(),
   personId: z.string().uuid('Person ID inválido').optional(),
   // Note: file is validated as File in the component
@@ -161,9 +153,7 @@ export const expectedActivitySchema = z.object({
     '50k_to_100k',
     '100k_to_500k',
     'more_than_500k',
-  ], {
-    required_error: 'Volumen mensual es requerido',
-  }),
+  ]),
   countries: z
     .array(z.string())
     .min(1, 'Debes seleccionar al menos un país')

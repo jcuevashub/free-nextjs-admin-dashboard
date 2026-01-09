@@ -7,12 +7,13 @@
  */
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useRef } from 'react';
+import { useState, useRef, Suspense } from 'react';
 import { verifyIdentityAction } from '@/app/actions/onboarding/verify-identity';
+import Button from '@/components/ui/button/Button';
 
 type VerificationStatus = 'idle' | 'capturing' | 'uploading' | 'verifying' | 'success' | 'error';
 
-export default function IdentityVerificationPage() {
+function IdentityVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -39,24 +40,25 @@ export default function IdentityVerificationPage() {
    * Start camera for selfie capture
    */
   const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'user',
-        },
-      });
+     router.push(`/onboarding/documents`);
+    // try {
+    //   const stream = await navigator.mediaDevices.getUserMedia({
+    //     video: {
+    //       width: { ideal: 1280 },
+    //       height: { ideal: 720 },
+    //       facingMode: 'user',
+    //     },
+    //   });
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setCameraActive(true);
-        setError(null);
-      }
-    } catch (err) {
-      console.error('Error accessing camera:', err);
-      setError('No se pudo acceder a la cámara. Por favor verifica los permisos.');
-    }
+    //   if (videoRef.current) {
+    //     videoRef.current.srcObject = stream;
+    //     setCameraActive(true);
+    //     setError(null);
+    //   }
+    // } catch (err) {
+    //   console.error('Error accessing camera:', err);
+    //   setError('No se pudo acceder a la cámara. Por favor verifica los permisos.');
+    // }
   };
 
   /**
@@ -232,21 +234,19 @@ export default function IdentityVerificationPage() {
               {/* Actions */}
               <div className="flex gap-4">
                 {!cameraActive ? (
-                  <button
-                    type="button"
+                  <Button           
                     onClick={startCamera}
                     className="btn btn-primary flex-1"
                   >
                     Iniciar cámara
-                  </button>
+                  </Button>
                 ) : (
-                  <button
-                    type="button"
+                  <Button
                     onClick={captureSelfie}
                     className="btn btn-primary flex-1"
                   >
                     Capturar selfie
-                  </button>
+                  </Button>
                 )}
               </div>
             </>
@@ -268,20 +268,18 @@ export default function IdentityVerificationPage() {
               </p>
 
               <div className="flex gap-4">
-                <button
-                  type="button"
+                <Button    
                   onClick={retakeSelfie}
                   className="btn btn-ghost flex-1"
                 >
                   Tomar otra foto
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
                   onClick={handleSubmit}
                   className="btn btn-primary flex-1"
                 >
                   Verificar identidad
-                </button>
+                </Button>
               </div>
             </>
           )}
@@ -357,8 +355,7 @@ export default function IdentityVerificationPage() {
               </h3>
               <p className="text-base-content/70 mb-6">{error}</p>
 
-              <button
-                type="button"
+              <Button
                 onClick={() => {
                   setStatus('idle');
                   setError(null);
@@ -367,7 +364,7 @@ export default function IdentityVerificationPage() {
                 className="btn btn-primary"
               >
                 Intentar de nuevo
-              </button>
+              </Button>
             </div>
           )}
 
@@ -389,4 +386,16 @@ export default function IdentityVerificationPage() {
       </div>
     </div>
   );
+}
+
+export default function IdentityVerificationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <IdentityVerificationContent />
+    </Suspense>
+  )
 }

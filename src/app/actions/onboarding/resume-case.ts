@@ -1,12 +1,5 @@
 'use server';
 
-/**
- * Resume Onboarding Case Action
- *
- * Finds and resumes an incomplete onboarding case for the current user.
- * Redirects to the appropriate step based on current progress.
- */
-
 import { createSupabaseServer } from '@/lib/supabaseServer';
 import { redirect } from 'next/navigation';
 
@@ -16,14 +9,11 @@ interface ResumeCaseResult {
   currentStep?: string;
   redirectUrl?: string;
   error?: string;
+  status?: string;
+  nextStep?: string;
 }
 
-/**
- * Resume incomplete onboarding case
- *
- * Finds the most recent incomplete case and returns its state
- * so the user can continue from where they left off.
- */
+
 export async function resumeOnboardingAction(): Promise<ResumeCaseResult> {
   try {
     const supabase = await createSupabaseServer();
@@ -57,14 +47,13 @@ export async function resumeOnboardingAction(): Promise<ResumeCaseResult> {
     if (!existingCase) {
       return {
         success: true,
-        redirectUrl: '/onboarding/start',
+        redirectUrl: '/onboarding/company-info',
       };
     }
 
     // Determine which step to resume from
     const stepRoutes: Record<string, string> = {
       start: '/onboarding/start',
-      account_selection: '/onboarding/account-selection',
       company_info: '/onboarding/company-info',
       company_address: '/onboarding/company-address',
       ownership: '/onboarding/ownership',
@@ -74,8 +63,8 @@ export async function resumeOnboardingAction(): Promise<ResumeCaseResult> {
       follow_up: '/onboarding/follow-up',
     };
 
-    const currentStep = existingCase.current_step || 'start';
-    const resumeRoute = stepRoutes[currentStep] || '/onboarding/start';
+    const currentStep = existingCase.current_step || 'company-info';
+    const resumeRoute = stepRoutes[currentStep] || '/onboarding/company-info';
 
     // Build URL with case data as query params
     const params = new URLSearchParams();
@@ -116,11 +105,6 @@ export async function resumeOnboardingAction(): Promise<ResumeCaseResult> {
   }
 }
 
-/**
- * Check if user has completed onboarding
- *
- * Used by middleware to determine if user should be redirected to onboarding
- */
 export async function hasCompletedOnboarding(): Promise<boolean> {
   try {
     const supabase = await createSupabaseServer();

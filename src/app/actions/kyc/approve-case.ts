@@ -8,6 +8,8 @@
  */
 
 import { createSupabaseServer } from '@/lib/supabaseServer';
+import { sendEmail } from '@/lib/email/client';
+import { generateWelcomeEmail } from '@/lib/email/templates/welcome';
 
 export interface ApproveCaseInput {
   caseId: string;
@@ -177,13 +179,115 @@ export async function approveCaseAction(input: ApproveCaseInput): Promise<Approv
       };
     }
 
-    // TODO: Send approval email to user
-    // await sendApprovalEmail(onboardingCase.user_id, companyData.companyName);
+    // Update user with company_id
+    await supabase
+      .from('users')
+      .update({ company_id: companyId })
+      .eq('id', onboardingCase.user_id);
+
+    // Create company_settings for tracking setup progress
+    const { error: settingsError } = await supabase
+      .from('company_settings')
+      .insert({
+        company_id: companyId,
+        timezone: 'America/Santo_Domingo',
+        language: 'es',
+        default_currency: accountPreference === 'dolar' ? 'USD' : 'DOP',
+        setup_completed: {
+          profile_completed: false,
+          team_invited: false,
+          payment_methods_added: false,
+          first_transaction: false,
+          ncf_configured: false,
+        },
+        welcome_email_sent: false,
+        welcome_page_shown: false,
+        tour_completed: false,
+      });
+
+    if (settingsError) {
+      console.error('[approve-case] Error creating company settings:', settingsError);
+      // Non-critical error, continue with approval
+    }
+
+    // Get created accounts for email
+    const { data: createdAccountsData } = await supabase
+      .from('bank_accounts')
+      .select('account_number, currency')
+      .eq('company_id', companyId);
+
+    // Send welcome email
+    try {
+      const emailHtml = generateWelcomeEmail({
+        userName: `${onboardingCase.applicant_first_name} ${onboardingCase.applicant_last_name}`,
+        companyName: companyData.companyName,
+        rnc: companyData.rnc,
+        accounts: createdAccountsData || [],
+        loginUrl: process.env.NEXT_PUBLIC_SITE_URL
+          ? `${process.env.NEXT_PUBLIC_SITE_URL}/signin`
+          : 'https://fintechrd.com/signin',
+      });
+
+      const emailResult = await sendEmail({
+        to: companyData.email || onboardingCase.user_email,
+        subject: '¡Tu cuenta de Fintech RD ha sido aprobada! 🎉',
+        html: emailHtml,
+        onboardingCaseId: caseId,
+        emailType: 'approved',
+      });
+
+      if (emailResult.success) {
+        // Mark email as sent in company_settings
+        await supabase
+          .from('company_settings')
+          .update({ welcome_email_sent: true })
+          .eq('company_id', companyId);
+      }
+    } catch (emailError) {
+      console.error('[approve-case] Error sending welcome email:', emailError);
+      // Non-critical error, continue with approval
+    }
+
+    // Create in-app notification
+    try {
+      await supabase.from('notifications').insert({
+        user_id: onboardingCase.user_id,
+        type: 'onboarding_approved',
+        title: '¡Cuenta aprobada!',
+        message: `Tu cuenta empresarial para ${companyData.companyName} ha sido aprobada. Ya puedes acceder a todas las funcionalidades de Fintech RD.`,
+        action_url: '/',
+        read: false,
+      });
+    } catch (notifError) {
+      console.error('[approve-case] Error creating notification:', notifError);
+      // Non-critical error, continue with approval
+    }
+
+    // Create audit log
+    try {
+      await supabase.from('audit_logs').insert({
+        user_id: user.id, // Admin who approved
+        company_id: companyId,
+        action: 'ONBOARDING_APPROVED',
+        entity_type: 'onboarding_case',
+        entity_id: caseId,
+        metadata: {
+          approved_by_email: user.email,
+          accounts_created: accountsCreated,
+          account_preference: accountPreference,
+          admin_notes: adminNotes,
+        },
+      });
+    } catch (auditError) {
+      console.error('[approve-case] Error creating audit log:', auditError);
+      // Non-critical error, continue with approval
+    }
 
     console.log('[approve-case] Case approved successfully:', {
       caseId,
       companyId,
       accountsCreated,
+      emailSent: true,
     });
 
     return {

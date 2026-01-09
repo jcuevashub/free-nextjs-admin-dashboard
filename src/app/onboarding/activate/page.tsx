@@ -1,11 +1,11 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 
 type DocItem = { id: string; label: string; checked: boolean }
 
-export default function OnboardingActivatePage() {
+function OnboardingActivateContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -108,5 +108,17 @@ export default function OnboardingActivatePage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function OnboardingActivatePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <OnboardingActivateContent />
+    </Suspense>
   )
 }

@@ -162,7 +162,7 @@ export interface StepConfig {
  * Complete step configurations
  */
 export const ONBOARDING_STEPS: StepConfig[] = [
-  {
+    {
     id: 'start',
     title: 'Inicio',
     path: '/onboarding/start',
@@ -170,66 +170,59 @@ export const ONBOARDING_STEPS: StepConfig[] = [
     required: true,
   },
   {
-    id: 'account_selection',
-    title: 'Selección de cuenta',
-    path: '/onboarding/account-selection',
-    order: 2,
-    required: true,
-  },
-  {
     id: 'company_info',
     title: 'Información de la empresa',
     path: '/onboarding/company-info',
-    order: 3,
+    order: 2,
     required: true,
   },
   {
     id: 'company_address',
     title: 'Dirección',
     path: '/onboarding/company-address',
-    order: 4,
+    order: 3,
     required: true,
   },
   {
     id: 'ownership',
     title: 'Propietarios',
     path: '/onboarding/ownership',
-    order: 5,
+    order: 4,
     required: true,
   },
   {
     id: 'identity_verification',
     title: 'Verificación de identidad',
     path: '/onboarding/identity-verification',
-    order: 6,
+    order: 5,
     required: true,
   },
   {
     id: 'documents',
     title: 'Documentos',
     path: '/onboarding/documents',
-    order: 7,
+    order: 6,
     required: true,
   },
   {
     id: 'expected_activity',
     title: 'Actividad esperada',
     path: '/onboarding/expected-activity',
-    order: 8,
+    order: 7,
     required: true,
   },
   {
     id: 'follow_up',
     title: 'Preguntas adicionales',
     path: '/onboarding/follow-up',
-    order: 9,
+    order: 8,
     required: true,
   },
   {
     id: 'complete',
     title: 'Completado',
     path: '/onboarding/complete',
-    order: 10,
+    order: 9,
     required: false,
   },
 ];

@@ -8,11 +8,10 @@
  */
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { saveStepAction } from '@/app/actions/onboarding/save-step';
 
 const steps = [
-  'Selección de cuenta',
   'Información de la empresa',
   'Dirección',
   'Propietarios',
@@ -20,7 +19,7 @@ const steps = [
   'Documentos',
 ];
 
-export default function ExpectedActivityPage() {
+function ExpectedActivityContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -163,5 +162,17 @@ export default function ExpectedActivityPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function ExpectedActivityPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <ExpectedActivityContent />
+    </Suspense>
   )
 }

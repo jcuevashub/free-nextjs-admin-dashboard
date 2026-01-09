@@ -13,8 +13,9 @@
  */
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useRef } from 'react';
+import { useState, useRef, Suspense } from 'react';
 import { uploadDocumentAction } from '@/app/actions/onboarding/upload-document';
+import Button from '@/components/ui/button/Button';
 
 interface DocumentStatus {
   uploaded: boolean;
@@ -24,7 +25,6 @@ interface DocumentStatus {
 }
 
 const steps = [
-  'Selección de cuenta',
   'Información de la empresa',
   'Dirección',
   'Propietarios',
@@ -60,7 +60,7 @@ const REQUIRED_DOCUMENTS = [
   },
 ];
 
-export default function DocumentsPage() {
+function DocumentsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -174,14 +174,14 @@ export default function DocumentsPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 7 de 10</p>
+        <p className="text-sm text-base-content/60">Paso 6 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
           <aside className="md:w-56 flex-shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">7 / 10</p>
+            <p className="text-sm font-medium text-primary">6 / 6</p>
             <nav className="space-y-2 text-sm">
               {steps.map((step, idx) => (
                 <div
@@ -241,13 +241,12 @@ export default function DocumentsPage() {
 
                         {/* Upload button */}
                         {!status.uploaded && !isUploading && (
-                          <button
-                            type="button"
+                          <Button
                             onClick={() => triggerFileInput(doc.key)}
                             className="btn btn-primary btn-sm"
                           >
                             Subir
-                          </button>
+                          </Button>
                         )}
                       </div>
 
@@ -350,22 +349,20 @@ export default function DocumentsPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
+                <Button
                   className="btn btn-ghost btn-sm"
                   onClick={handleBack}
                   disabled={loading || !!uploading}
                 >
                   Atrás
-                </button>
+                </Button>
 
-                <button
-                  type="submit"
+                <Button
                   className="btn btn-primary"
                   disabled={loading || !!uploading || getUploadedCount() < 4}
                 >
                   {loading ? 'Guardando...' : 'Siguiente'}
-                </button>
+                </Button>
               </div>
             </form>
           </section>
@@ -373,4 +370,16 @@ export default function DocumentsPage() {
       </main>
     </div>
   );
+}
+
+export default function DocumentsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <DocumentsContent />
+    </Suspense>
+  )
 }

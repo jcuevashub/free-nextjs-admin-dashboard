@@ -11,7 +11,7 @@ import { createSupabaseServer } from '@/lib/supabaseServer';
 import { revalidatePath } from 'next/cache';
 
 type OnboardingStep =
-  | 'account_selection'
+  | 'start'
   | 'company_info'
   | 'company_address'
   | 'ownership'
@@ -58,12 +58,12 @@ export async function saveStepAction(input: SaveStepInput): Promise<SaveStepResu
 
     // Map step to database field
     const stepFieldMap: Record<OnboardingStep, Record<string, any>> = {
-      account_selection: { account_preference: data.accountPreference },
+      start: {  },
       company_info: { company_data: data },
       company_address: { address_data: data },
       ownership: { ownership_data: data },
-      identity_verification: {}, // Handled separately in verify-identity action
-      documents: {}, // Handled separately in upload-document action
+      identity_verification: {},
+      documents: {},
       expected_activity: { activity_data: data },
       follow_up: { followup_data: data },
     };

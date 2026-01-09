@@ -7,9 +7,10 @@
  */
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { saveStepAction } from '@/app/actions/onboarding/save-step';
 import type { AccountPreference } from '@/types/onboarding';
+import Button from '@/components/ui/button/Button';
 
 interface AccountOption {
   value: AccountPreference;
@@ -23,23 +24,23 @@ const accountOptions: AccountOption[] = [
     value: 'peso',
     title: 'Pesos (DOP)',
     description: 'Cuenta en moneda dominicana para operaciones locales',
-    icon: 'RD$',
+    icon: 'DOP$',
   },
   {
     value: 'dolar',
     title: 'Dólares (USD)',
     description: 'Cuenta en dólares estadounidenses para operaciones internacionales',
-    icon: '$',
+    icon: 'USD$',
   },
   {
     value: 'both',
     title: 'Ambas',
     description: 'Cuenta dual DOP + USD para máxima flexibilidad',
-    icon: 'RD$ + $',
+    icon: 'DOP$ + USD$',
   },
 ];
 
-export default function AccountSelectionPage() {
+function AccountSelectionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selected, setSelected] = useState<AccountPreference | null>(null);
@@ -59,29 +60,29 @@ export default function AccountSelectionPage() {
     setLoading(true);
     setError(null);
 
-    try {
-      const result = await saveStepAction({
-        step: 'account_selection',
-        caseId,
-        data: { accountPreference: selected },
-      });
+    // try {
+    //   const result = await saveStepAction({
+    //     step: 'account_selection',
+    //     caseId,
+    //     data: { accountPreference: selected },
+    //   });
 
-      if (!result.success) {
-        setError(result.error || 'Error al guardar');
-        setLoading(false);
-        return;
-      }
+    //   if (!result.success) {
+    //     setError(result.error || 'Error al guardar');
+    //     setLoading(false);
+    //     return;
+    //   }
 
-      // Navigate to next step with updated params
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('caseId', result.caseId!);
-      params.set('accountPreference', selected);
-      router.push(`/onboarding/company-info?${params.toString()}`);
-    } catch (err) {
-      console.error('Error saving account selection:', err);
-      setError('Error inesperado. Por favor intenta de nuevo.');
-      setLoading(false);
-    }
+    //   // Navigate to next step with updated params
+    //   const params = new URLSearchParams(searchParams.toString());
+    //   params.set('caseId', result.caseId!);
+    //   params.set('accountPreference', selected);
+    //   router.push(`/onboarding/company-info?${params.toString()}`);
+    // } catch (err) {
+    //   console.error('Error saving account selection:', err);
+    //   setError('Error inesperado. Por favor intenta de nuevo.');
+    //   setLoading(false);
+    // }
   };
 
   return (
@@ -89,10 +90,10 @@ export default function AccountSelectionPage() {
       <div className="w-full max-w-4xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-base-content mb-2">
+          <h1 className="text-3xl font-bold text-base-content mb-2 dark:text-white/90">
             ¿Qué tipo de cuenta necesitas?
           </h1>
-          <p className="text-base-content/70">
+          <p className="text-base-content/70 dark:text-white/90">
             Selecciona la moneda en la que operarás. Puedes elegir ambas para mayor flexibilidad.
           </p>
         </div>
@@ -113,19 +114,19 @@ export default function AccountSelectionPage() {
                 }`}
               >
                 {/* Icon */}
-                <div className="text-4xl font-bold text-primary mb-4">{option.icon}</div>
+                <div className="text-4xl font-bold text-primary mb-4 dark:text-white/90">{option.icon}</div>
 
                 {/* Title */}
-                <h3 className="text-xl font-semibold text-base-content mb-2">
+                <h3 className="text-xl font-semibold text-base-content mb-2 dark:text-white/90">
                   {option.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm text-base-content/70">{option.description}</p>
+                <p className="text-sm text-base-content/70 dark:text-white/90">{option.description}</p>
 
                 {/* Check indicator */}
                 {selected === option.value && (
-                  <div className="mt-4 flex items-center text-primary text-sm font-medium">
+                  <div className="mt-4 flex items-center text-primary text-sm font-medium dark:text-white/90">
                     <svg
                       className="w-5 h-5 mr-2"
                       fill="none"
@@ -148,45 +149,55 @@ export default function AccountSelectionPage() {
 
           {/* Error message */}
           {error && (
-            <div className="mb-6 p-4 bg-error/10 border border-error rounded-lg text-error text-sm">
+            <div className="mb-6 p-4 bg-error/10 border border-error rounded-lg text-error text-sm dark:text-white/90">
               {error}
             </div>
           )}
 
           {/* Info box */}
           <div className="mb-6 p-4 bg-info/10 border border-info/30 rounded-lg">
-            <p className="text-sm text-base-content/80">
+            <p className="text-sm text-base-content/80 dark:text-white/90">
               <strong>💡 Consejo:</strong> Si planeas recibir pagos internacionales, te
               recomendamos seleccionar "Ambas" para tener acceso a cuentas en pesos y dólares.
             </p>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
+          <div className="flex items-center justify-between dark:text-white/90">
+            <Button
               onClick={() => router.back()}
               className="btn btn-ghost"
               disabled={loading}
             >
               Atrás
-            </button>
+            </Button>
 
-            <button
-              type="submit"
+            <Button
               className="btn btn-primary"
               disabled={!selected || loading}
             >
               {loading ? 'Guardando...' : 'Continuar'}
-            </button>
+            </Button>
           </div>
         </form>
 
         {/* Progress indicator */}
-        <div className="mt-6 text-center text-sm text-base-content/60">
-          Paso 2 de 10
+        <div className="mt-6 text-center text-sm text-base-content/60 dark:text-white/90">
+          Paso 2 de 6
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AccountSelectionPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <AccountSelectionContent />
+    </Suspense>
   );
 }

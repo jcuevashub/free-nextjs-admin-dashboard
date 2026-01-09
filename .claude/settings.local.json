@@ -17,7 +17,11 @@
       "Bash(supabase migration repair:*)",
       "Bash(supabase db remote psql:*)",
       "Bash(supabase db push:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(npx supabase db push)",
+      "Bash(yes:*)",
+      "Bash(npm run build:*)",
+      "Bash(kill:*)"
     ]
   }
 }

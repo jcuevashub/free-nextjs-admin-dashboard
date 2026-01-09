@@ -2,6 +2,7 @@
 
 import { createSupabaseServer } from "@/lib/supabaseServer";
 import { redirect } from "next/navigation";
+import { saveStepAction } from '@/app/actions/onboarding/save-step';
 
 export async function signUpAction(formData: FormData) {
   const email = (formData.get("email") as string) || "";
@@ -12,7 +13,7 @@ export async function signUpAction(formData: FormData) {
   const supabase = await createSupabaseServer();
 
   // Sign up the user with email confirmation disabled
-  const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  const {error: signUpError } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -28,8 +29,6 @@ export async function signUpAction(formData: FormData) {
     return { error: signUpError.message };
   }
 
-  // Immediately sign in to create a session
-  // This works because we're auto-confirming the email
   const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -61,6 +60,23 @@ export async function signUpAction(formData: FormData) {
     }
   }
 
-  // Redirect to onboarding
-  redirect('/onboarding');
+  // Initialize onboarding case
+  const result = await saveStepAction({
+    step: 'start',
+    data: {
+      applicantFirstName: firstName,
+      applicantLastName: lastName,
+    },
+  });
+
+  if (!result.success) {
+
+    return;
+  }
+
+  // Navigate to account selection with caseId
+  const params = new URLSearchParams();
+  params.set('caseId', result.caseId!);
+
+  redirect(`/onboarding/company-info?${params.toString()}`);
 }

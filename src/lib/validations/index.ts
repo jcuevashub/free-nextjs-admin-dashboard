@@ -47,12 +47,8 @@ export type UserFormData = z.infer<typeof userSchema>;
 
 export const createAccountSchema = z.object({
   account_name: z.string().min(1, 'Nombre de cuenta es requerido'),
-  account_type: z.enum(['checking', 'savings'], {
-    errorMap: () => ({ message: 'Tipo de cuenta inválido' }),
-  }),
-  currency: z.enum(['DOP', 'USD'], {
-    errorMap: () => ({ message: 'Moneda inválida' }),
-  }),
+  account_type: z.enum(['checking', 'savings']),
+  currency: z.enum(['DOP', 'USD']),
   daily_transfer_limit: z.number().positive().optional(),
   monthly_transfer_limit: z.number().positive().optional(),
 });
@@ -293,7 +289,7 @@ export function validateWithZod<T>(
   }
 
   const errors: Record<string, string[]> = {};
-  result.error.errors.forEach((err) => {
+  result.error.issues.forEach((err) => {
     const path = err.path.join('.');
     if (!errors[path]) {
       errors[path] = [];

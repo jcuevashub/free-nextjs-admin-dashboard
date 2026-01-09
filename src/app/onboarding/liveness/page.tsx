@@ -1,9 +1,9 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 
-export default function OnboardingLivenessPage() {
+function OnboardingLivenessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<'idle' | 'capturing' | 'success'>('idle')
@@ -88,5 +88,17 @@ export default function OnboardingLivenessPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function OnboardingLivenessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <OnboardingLivenessContent />
+    </Suspense>
   )
 }

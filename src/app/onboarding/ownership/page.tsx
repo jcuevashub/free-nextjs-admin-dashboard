@@ -10,14 +10,16 @@
  */
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { saveStepAction } from '@/app/actions/onboarding/save-step';
 import { screenSanctionsAction } from '@/app/actions/onboarding/screen-sanctions';
 import { ownershipSchema } from '@/lib/validations/onboarding';
 import { formatCedula } from '@/lib/utils';
+import Input from '@/components/form/input/InputField';
+import Checkbox from '@/components/form/input/Checkbox';
+import Button from '@/components/ui/button/Button';
 
 const steps = [
-  'Selección de cuenta',
   'Información de la empresa',
   'Dirección',
   'Propietarios',
@@ -25,7 +27,7 @@ const steps = [
   'Documentos',
 ];
 
-export default function OwnershipPage() {
+function OwnershipContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -63,7 +65,7 @@ export default function OwnershipPage() {
       });
 
       if (!validation.success) {
-        const firstError = validation.error.errors[0];
+        const firstError = validation.error;
         setError(firstError.message);
         setLoading(false);
         return;
@@ -146,14 +148,14 @@ export default function OwnershipPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 5 de 10</p>
+        <p className="text-sm text-base-content/60">Paso 4 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
-          <aside className="md:w-56 flex-shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">5 / 10</p>
+          <aside className="md:w-56 shrink-0 space-y-3">
+            <p className="text-sm font-medium text-primary">4 / 6</p>
             <nav className="space-y-2 text-sm">
               {steps.map((step, idx) => (
                 <div
@@ -175,9 +177,9 @@ export default function OwnershipPage() {
               className="rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6 md:p-8 space-y-4"
             >
               <div className="space-y-1">
-                <h1 className="text-2xl font-semibold">Propietario / UBO</h1>
+                <h1 className="text-2xl font-semibold">Propietario</h1>
                 <p className="text-base-content/70">
-                  Información del beneficiario final (Ultimate Beneficial Owner).
+                  Información del beneficiario final.
                 </p>
               </div>
 
@@ -185,11 +187,10 @@ export default function OwnershipPage() {
                 {/* Owner Name */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">Nombre completo *</span>
-                  <input
+                  <Input
                     type="text"
-                    required
                     className="input input-bordered w-full"
-                    value={ownerName}
+                    defaultValue={ownerName}
                     onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="Juan Pérez Rodríguez"
                   />
@@ -198,11 +199,10 @@ export default function OwnershipPage() {
                 {/* Cédula */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">Cédula *</span>
-                  <input
+                  <Input
                     type="text"
-                    required
                     className="input input-bordered w-full"
-                    value={ownerId}
+                    defaultValue={ownerId}
                     onChange={(e) => setOwnerId(formatCedula(e.target.value))}
                     placeholder="001-1234567-8"
                   />
@@ -215,24 +215,22 @@ export default function OwnershipPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
                     <span className="label-text text-sm font-medium">Fecha de nacimiento</span>
-                    <input
+                    <Input
                       type="date"
                       className="input input-bordered w-full"
-                      value={dateOfBirth}
+                      defaultValue={dateOfBirth}
                       onChange={(e) => setDateOfBirth(e.target.value)}
                     />
                   </label>
 
                   <label className="form-control w-full">
                     <span className="label-text text-sm font-medium">% de participación *</span>
-                    <input
+                    <Input
                       type="number"
-                      required
                       min="0"
                       max="100"
-                      step="0.01"
                       className="input input-bordered w-full"
-                      value={ownershipPct}
+                      defaultValue={ownershipPct}
                       onChange={(e) => setOwnershipPct(e.target.value)}
                       placeholder="25"
                     />
@@ -242,10 +240,10 @@ export default function OwnershipPage() {
                 {/* Position */}
                 <label className="form-control w-full">
                   <span className="label-text text-sm font-medium">Cargo</span>
-                  <input
+                  <Input
                     type="text"
                     className="input input-bordered w-full"
-                    value={position}
+                    defaultValue={position}
                     onChange={(e) => setPosition(e.target.value)}
                     placeholder="Director, Presidente, etc."
                   />
@@ -253,15 +251,13 @@ export default function OwnershipPage() {
 
                 {/* PEP Checkbox */}
                 <label className="flex items-start gap-3 p-4 border border-base-300 rounded-lg cursor-pointer hover:bg-base-200/50">
-                  <input
-                    type="checkbox"
-                    className="checkbox checkbox-primary mt-1"
+                  <Checkbox
                     checked={pep}
-                    onChange={(e) => setPep(e.target.checked)}
+                    onChange={(checked) => setPep(checked)}
                   />
                   <div className="flex-1">
                     <span className="font-medium text-sm">
-                      Es Persona Políticamente Expuesta (PEP)
+                      Es Persona Políticamente Expuesta (PEP)?
                     </span>
                     <p className="text-xs text-base-content/60 mt-1">
                       Funcionario público, familiar o asociado cercano de un funcionario
@@ -306,22 +302,20 @@ export default function OwnershipPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
+                <Button
                   className="btn btn-ghost btn-sm"
                   onClick={handleBack}
                   disabled={loading || screening}
                 >
                   Atrás
-                </button>
+                </Button>
 
-                <button
-                  type="submit"
+                <Button
                   className="btn btn-primary"
                   disabled={loading || screening}
                 >
                   {loading || screening ? 'Procesando...' : 'Continuar a Verificación de Identidad'}
-                </button>
+                </Button>
               </div>
             </form>
           </section>
@@ -329,4 +323,16 @@ export default function OwnershipPage() {
       </main>
     </div>
   );
+}
+
+export default function OwnershipPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <OwnershipContent />
+    </Suspense>
+  )
 }
