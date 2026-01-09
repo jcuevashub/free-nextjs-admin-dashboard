@@ -62,7 +62,7 @@ export function isValidRNC(rnc: string): boolean {
  * @param rnc RNC a formatear
  * @returns RNC formateado (ej: 123-45678-9)
  */
-export function formatRNC(rnc: string): string {
+export function formatRnc(rnc: string): string {
   const cleaned = rnc.replace(/[^0-9]/g, '');
 
   if (cleaned.length === 9) {

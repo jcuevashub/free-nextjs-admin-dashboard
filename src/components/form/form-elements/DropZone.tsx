@@ -14,12 +14,11 @@ const DropzoneComponent: React.FC = () => {
     accept: {
       "image/png": [],
       "image/jpeg": [],
-      "image/webp": [],
-      "image/svg+xml": [],
+      "image/pdf": []
     },
   });
   return (
-    <ComponentCard title="Dropzone">
+    <ComponentCard title="Sube tu documento de identidad oficial, preferiblemente de ambos lados.">
       <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
         <form
           {...getRootProps()}
@@ -37,8 +36,8 @@ const DropzoneComponent: React.FC = () => {
 
           <div className="dz-message flex flex-col items-center m-0!">
             {/* Icon Container */}
-            <div className="mb-[22px] flex justify-center">
-              <div className="flex h-[68px] w-[68px]  items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
+            <div className="mb-5.5 flex justify-center">
+              <div className="flex h-17 w-17  items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
                 <svg
                   className="fill-current"
                   width="29"
@@ -57,15 +56,15 @@ const DropzoneComponent: React.FC = () => {
 
             {/* Text Content */}
             <h4 className="mb-3 font-semibold text-gray-800 text-theme-xl dark:text-white/90">
-              {isDragActive ? "Drop Files Here" : "Drag & Drop Files Here"}
+              {isDragActive ? "Drop Files Here" : "Arrastre y suelte archivos aquí"}
             </h4>
 
             <span className=" text-center mb-5 block w-full max-w-[290px] text-sm text-gray-700 dark:text-gray-400">
-              Drag and drop your PNG, JPG, WebP, SVG images here or browse
+              Arrastre y suelte sus imágenes PNG, JPG, PDF aquí o navegue
             </span>
 
             <span className="font-medium underline text-theme-sm text-brand-500">
-              Browse File
+              Examinar archivo
             </span>
           </div>
         </form>

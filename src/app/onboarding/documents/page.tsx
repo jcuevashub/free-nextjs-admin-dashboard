@@ -24,12 +24,11 @@ interface DocumentStatus {
   confidence?: number;
 }
 
+
 const steps = [
   'Información de la empresa',
-  'Dirección',
   'Propietarios',
-  'Verificación de identidad',
-  'Documentos',
+  'Documentos de la empresa',
 ];
 
 const REQUIRED_DOCUMENTS = [
@@ -174,20 +173,20 @@ function DocumentsContent() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 6 de 6</p>
+        <p className="text-xl text-base-content/60">Paso 3 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
-          <aside className="md:w-56 flex-shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">6 / 6</p>
-            <nav className="space-y-2 text-sm">
+          <aside className="md:w-56 shrink-0 space-y-3">
+            <p className="text-xl font-medium text-primary">3 / 6</p>
+            <nav className="space-y-2 text-md">
               {steps.map((step, idx) => (
                 <div
                   key={step}
                   className={`px-3 py-2 rounded-lg ${
-                    idx === 5 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                    idx === 2 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
                   }`}
                 >
                   {step}
@@ -205,10 +204,9 @@ function DocumentsContent() {
               <div className="space-y-1">
                 <h1 className="text-2xl font-semibold">Documentos requeridos</h1>
                 <p className="text-base-content/70">
-                  Sube los documentos para verificar tu empresa. Se verificarán automáticamente con
-                  Socure DocV.
+                  Sube los documentos para verificar tu empresa.
                 </p>
-                <p className="text-sm text-base-content/60">
+                <p className="text-md text-base-content/60">
                   {getUploadedCount()} de {REQUIRED_DOCUMENTS.length} documentos subidos
                 </p>
               </div>
@@ -252,7 +250,7 @@ function DocumentsContent() {
 
                       {/* Uploading status */}
                       {isUploading && (
-                        <div className="flex items-center gap-2 text-sm text-info">
+                        <div className="flex items-center gap-2text-md text-info">
                           <div className="loading loading-spinner loading-xs"></div>
                           <span>Subiendo y verificando...</span>
                         </div>
@@ -261,7 +259,7 @@ function DocumentsContent() {
                       {/* Uploaded status */}
                       {status.uploaded && (
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-sm">
+                          <div className="flex items-center gap-2 text-md">
                             <svg
                               className="w-4 h-4 text-success"
                               fill="none"
@@ -349,13 +347,13 @@ function DocumentsContent() {
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-2">
-                <Button
+                <button
                   className="btn btn-ghost btn-sm"
                   onClick={handleBack}
                   disabled={loading || !!uploading}
                 >
                   Atrás
-                </Button>
+                </button>
 
                 <Button
                   className="btn btn-primary"

@@ -116,7 +116,7 @@ export default function OnboardingStartPage() {
           </button>
 
           <p className="text-xs text-base-content/60 leading-relaxed">
-            Al hacer clic en "Comenzar solicitud" aceptas los Términos y la Política de privacidad de Facil.do y consientes
+            Al hacer clic en &quot;Comenzar solicitud&quot; aceptas los Términos y la Política de privacidad de Facil.do y consientes
             recibir comunicaciones electrónicas relacionadas a tu cuenta.
           </p>
         </form>

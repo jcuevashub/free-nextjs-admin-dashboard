@@ -41,37 +41,38 @@ function CompanyAddressContent() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    try {
-      // Save address data
-      const result = await saveStepAction({
-        step: 'company_address',
-        caseId,
-        data: {
-          addressLine1,
-          addressLine2: addressLine2 || undefined,
-          city,
-          province,
-          postalCode: postalCode || undefined,
-          country,
-        },
-      });
+        router.push(`/onboarding/ownership`);
+    // try {
+    //   // Save address data
+    //   const result = await saveStepAction({
+    //     step: 'company_address',
+    //     caseId,
+        // data: {
+        //   addressLine1,
+        //   addressLine2: addressLine2 || undefined,
+        //   city,
+        //   province,
+        //   postalCode: postalCode || undefined,
+        //   country,
+        // },
+    //   });
 
-      if (!result.success) {
-        setError(result.error || 'Error al guardar dirección');
-        setLoading(false);
-        return;
-      }
+    //   if (!result.success) {
+    //     setError(result.error || 'Error al guardar dirección');
+    //     setLoading(false);
+    //     return;
+    //   }
 
-      // Navigate to next step
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('caseId', result.caseId!);
-      if (result.companyId) params.set('companyId', result.companyId);
-      router.push(`/onboarding/ownership?${params.toString()}`);
-    } catch (err) {
-      console.error('Error in company-address:', err);
-      setError(err instanceof Error ? err.message : 'Error inesperado');
-      setLoading(false);
-    }
+    //   // Navigate to next step
+    //   const params = new URLSearchParams(searchParams.toString());
+    //   params.set('caseId', result.caseId!);
+    //   if (result.companyId) params.set('companyId', result.companyId);
+    //   router.push(`/onboarding/ownership?${params.toString()}`);
+    // } catch (err) {
+    //   console.error('Error in company-address:', err);
+    //   setError(err instanceof Error ? err.message : 'Error inesperado');
+    //   setLoading(false);
+    // }
   };
 
   const handleBack = () => {
@@ -83,14 +84,14 @@ function CompanyAddressContent() {
     <div className="min-h-screen bg-base-200 text-base-content flex flex-col">
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 2 de 6</p>
+        <p className="text-xl text-base-content/60">Paso 2 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
           <aside className="md:w-56 shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">2 / 6</p>
-            <nav className="space-y-2 text-sm">
+            <p className="text-xl font-medium text-primary">2 / 6</p>
+            <nav className="space-y-2 text-md">
               {steps.map((step, idx) => (
                 <div
                   key={step}
@@ -117,7 +118,7 @@ function CompanyAddressContent() {
               <div className="grid grid-cols-1 gap-4">
                 {/* Address Line 1 */}
                 <label className="form-control w-full">
-                  <span className="label-text text-sm font-medium">Dirección *</span>
+                  <span className="label-text text-md font-medium">Dirección *</span>
                   <Input
                     type="text"
                     className="input input-bordered w-full"
@@ -129,7 +130,7 @@ function CompanyAddressContent() {
 
                 {/* Address Line 2 */}
                 <label className="form-control w-full">
-                  <span className="label-text text-sm font-medium">Apartamento, suite, etc. (opcional)</span>
+                  <span className="label-text text-md font-medium">Apartamento, suite, etc. (opcional)</span>
                   <Input
                     type="text"
                     className="input input-bordered w-full"
@@ -142,7 +143,7 @@ function CompanyAddressContent() {
                 {/* City & Province */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
-                    <span className="label-text text-sm font-medium">Ciudad *</span>
+                    <span className="label-text text-md font-medium">Ciudad *</span>
                     <Input
                       type="text"
                       className="input input-bordered w-full"
@@ -152,7 +153,7 @@ function CompanyAddressContent() {
                     />
                   </label>
                   <label className="form-control w-full">
-                    <span className="label-text text-sm font-medium">Provincia *</span>
+                    <span className="label-text text-md font-medium">Provincia *</span>
                     <Input
                       type="text"
                       className="input input-bordered w-full"
@@ -166,7 +167,7 @@ function CompanyAddressContent() {
                 {/* Postal Code & Country */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
-                    <span className="label-text text-sm font-medium">Código postal</span>
+                    <span className="label-text text-md font-medium">Código postal</span>
                     <Input
                       type="text"
                       className="input input-bordered w-full"
@@ -176,7 +177,7 @@ function CompanyAddressContent() {
                     />
                   </label>
                   <label className="form-control w-full">
-                    <span className="label-text text-sm font-medium">País</span>
+                    <span className="label-text text-md font-medium">País</span>
                     <Input
                       type="text"
                       disabled
@@ -190,7 +191,7 @@ function CompanyAddressContent() {
               {/* Error message */}
               {error && (
                 <div className="p-4 bg-error/10 border border-error rounded-lg">
-                  <p className="text-sm text-error">{error}</p>
+                  <p className="text-md text-error">{error}</p>
                 </div>
               )}
 

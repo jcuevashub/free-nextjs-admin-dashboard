@@ -98,7 +98,7 @@ export default function TermsAndConditions() {
               <li>Usar los materiales para cualquier propósito comercial no autorizado</li>
               <li>Intentar descompilar o realizar ingeniería inversa de cualquier software del servicio</li>
               <li>Eliminar cualquier derecho de autor u otras notaciones de propiedad de los materiales</li>
-              <li>Transferir los materiales a otra persona o "reflejar" los materiales en cualquier otro servidor</li>
+              <li>Transferir los materiales a otra persona o &quot;reflejar&quot; los materiales en cualquier otro servidor</li>
             </ul>
           </section>
 

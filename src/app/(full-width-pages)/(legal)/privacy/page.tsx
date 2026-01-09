@@ -304,7 +304,7 @@ export default function PrivacyPolicy() {
               10. Cambios a esta Política
             </h2>
             <p className="leading-relaxed">
-              Podemos actualizar esta Política de Privacidad periódicamente. Le notificaremos sobre cambios significativos publicando la nueva política en esta página y actualizando la fecha de "Última actualización". Le recomendamos revisar esta política regularmente para estar informado sobre cómo protegemos su información.
+              Podemos actualizar esta Política de Privacidad periódicamente. Le notificaremos sobre cambios significativos publicando la nueva política en esta página y actualizando la fecha de &quot;Última actualización&quot;. Le recomendamos revisar esta política regularmente para estar informado sobre cómo protegemos su información.
             </p>
           </section>
 

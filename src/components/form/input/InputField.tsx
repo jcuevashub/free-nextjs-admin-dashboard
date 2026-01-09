@@ -6,10 +6,12 @@ interface InputProps {
   name?: string;
   placeholder?: string;
   defaultValue?: string | number;
+  value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   min?: string;
   max?: string;
+  maxLength?: number;
   step?: number;
   disabled?: boolean;
   required?: boolean;
@@ -24,10 +26,12 @@ const Input: FC<InputProps> = ({
   name,
   placeholder,
   defaultValue,
+  value,
   onChange,
   className = "",
   min,
   max,
+  maxLength,
   step,
   disabled = false,
   required = false,
@@ -49,6 +53,32 @@ const Input: FC<InputProps> = ({
     inputClasses += ` bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800`;
   }
 
+  const numericMax =
+    type === "number" && max !== undefined ? parseFloat(max) : undefined;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let nextValue = e.target.value;
+
+    if (maxLength && nextValue.length > maxLength) {
+      nextValue = nextValue.slice(0, maxLength);
+      e.target.value = nextValue;
+    }
+
+    if (
+      numericMax !== undefined &&
+      nextValue !== "" &&
+      !Number.isNaN(numericMax)
+    ) {
+      const asNumber = parseFloat(nextValue);
+      if (!Number.isNaN(asNumber) && asNumber > numericMax) {
+        nextValue = String(numericMax);
+        e.target.value = nextValue;
+      }
+    }
+
+    onChange?.(e);
+  };
+
   return (
     <div className="relative">
       <input
@@ -57,13 +87,16 @@ const Input: FC<InputProps> = ({
         name={name}
         placeholder={placeholder}
         defaultValue={defaultValue}
-        onChange={onChange}
+        value={value}
+        onChange={handleChange}
         min={min}
         max={max}
+        maxLength={maxLength}
         step={step}
         disabled={disabled}
         required={required}
         className={inputClasses}
+        inputMode={type === "number" ? "numeric" : undefined}
       />
 
       {/* Optional Hint Text */}

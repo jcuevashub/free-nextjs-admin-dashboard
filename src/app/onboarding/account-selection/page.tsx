@@ -158,7 +158,7 @@ function AccountSelectionContent() {
           <div className="mb-6 p-4 bg-info/10 border border-info/30 rounded-lg">
             <p className="text-sm text-base-content/80 dark:text-white/90">
               <strong>💡 Consejo:</strong> Si planeas recibir pagos internacionales, te
-              recomendamos seleccionar "Ambas" para tener acceso a cuentas en pesos y dólares.
+              recomendamos seleccionar &quot;Ambas&quot; para tener acceso a cuentas en pesos y dólares.
             </p>
           </div>
 

@@ -14,17 +14,16 @@ import { useState, Suspense } from 'react';
 import { saveStepAction } from '@/app/actions/onboarding/save-step';
 import { screenSanctionsAction } from '@/app/actions/onboarding/screen-sanctions';
 import { ownershipSchema } from '@/lib/validations/onboarding';
-import { formatCedula } from '@/lib/utils';
+import { formatCedula, formatRnc } from '@/lib/utils';
 import Input from '@/components/form/input/InputField';
 import Checkbox from '@/components/form/input/Checkbox';
 import Button from '@/components/ui/button/Button';
+import DropzoneComponent from '@/components/form/form-elements/DropZone';
 
 const steps = [
   'Información de la empresa',
-  'Dirección',
   'Propietarios',
-  'Verificación de identidad',
-  'Documentos',
+  'Documentos de la empresa',
 ];
 
 function OwnershipContent() {
@@ -34,6 +33,7 @@ function OwnershipContent() {
   // Form state
   const [ownerName, setOwnerName] = useState(searchParams.get('ownerName') ?? '');
   const [ownerId, setOwnerId] = useState(searchParams.get('ownerId') ?? '');
+  const [rnc, setRnc] = useState(searchParams.get('rnc') ?? '');
   const [ownershipPct, setOwnershipPct] = useState(searchParams.get('ownershipPct') ?? '25');
   const [pep, setPep] = useState(searchParams.get('pep') === 'true');
   const [dateOfBirth, setDateOfBirth] = useState(searchParams.get('dateOfBirth') ?? '');
@@ -52,90 +52,92 @@ function OwnershipContent() {
     setLoading(true);
     setError(null);
     setSanctionsWarning(null);
+    router.push(`/onboarding/documents`);
+    // try {
+    //   // Step 1: Validate form data with Zod
+    //   const validation = ownershipSchema.safeParse({
+    //     ownerName,
+    //     ownerId,
+    //     rnc,
+    //     ownershipPct: parseFloat(ownershipPct),
+    //     pep,
+    //     dateOfBirth: dateOfBirth || undefined,
+    //     position: position || undefined,
+    //   });
 
-    try {
-      // Step 1: Validate form data with Zod
-      const validation = ownershipSchema.safeParse({
-        ownerName,
-        ownerId,
-        ownershipPct: parseFloat(ownershipPct),
-        pep,
-        dateOfBirth: dateOfBirth || undefined,
-        position: position || undefined,
-      });
+    //   if (!validation.success) {
+    //     const firstError = validation.error;
+    //     setError(firstError.message);
+    //     setLoading(false);
+    //     return;
+    //   }
 
-      if (!validation.success) {
-        const firstError = validation.error;
-        setError(firstError.message);
-        setLoading(false);
-        return;
-      }
+    //   // Step 2: Save ownership data
+    //   const saveResult = await saveStepAction({
+    //     step: 'ownership',
+    //     caseId,
+    //     data: {
+    //       ownerName,
+    //       ownerId,
+    //       rnc,
+    //       ownershipPct: parseFloat(ownershipPct),
+    //       pep,
+    //       dateOfBirth,
+    //       position,
+    //     },
+    //   });
 
-      // Step 2: Save ownership data
-      const saveResult = await saveStepAction({
-        step: 'ownership',
-        caseId,
-        data: {
-          ownerName,
-          ownerId,
-          ownershipPct: parseFloat(ownershipPct),
-          pep,
-          dateOfBirth,
-          position,
-        },
-      });
+    //   if (!saveResult.success) {
+    //     setError(saveResult.error || 'Error al guardar información');
+    //     setLoading(false);
+    //     return;
+    //   }
 
-      if (!saveResult.success) {
-        setError(saveResult.error || 'Error al guardar información');
-        setLoading(false);
-        return;
-      }
+    //   // Step 3: Screen owner against OFAC/PEP lists
+    //   setScreening(true);
+    //   const screeningResult = await screenSanctionsAction({
+    //     caseId: saveResult.caseId!,
+    //     entityName: ownerName,
+    //     entityType: 'individual',
+    //     entityIdentifier: ownerId,
+    //     dateOfBirth: dateOfBirth || undefined,
+    //   });
 
-      // Step 3: Screen owner against OFAC/PEP lists
-      setScreening(true);
-      const screeningResult = await screenSanctionsAction({
-        caseId: saveResult.caseId!,
-        entityName: ownerName,
-        entityType: 'individual',
-        entityIdentifier: ownerId,
-        dateOfBirth: dateOfBirth || undefined,
-      });
+    //   if (!screeningResult.success) {
+    //     console.error('Sanctions screening error:', screeningResult.error);
+    //     // Don't fail the flow, just log and continue
+    //   } else if (screeningResult.isOnSanctionsList) {
+    //     // OFAC match - this should auto-reject
+    //     setError(
+    //       'Esta persona aparece en listas de sanciones internacionales y no puede ser aprobada.'
+    //     );
+    //     setLoading(false);
+    //     setScreening(false);
+    //     return;
+    //   } else if (screeningResult.isPEP || pep) {
+    //     // PEP found - show warning but allow to continue
+    //     setSanctionsWarning(
+    //       'Se identificó como Persona Políticamente Expuesta (PEP). Tu solicitud será revisada manualmente.'
+    //     );
+    //   }
 
-      if (!screeningResult.success) {
-        console.error('Sanctions screening error:', screeningResult.error);
-        // Don't fail the flow, just log and continue
-      } else if (screeningResult.isOnSanctionsList) {
-        // OFAC match - this should auto-reject
-        setError(
-          'Esta persona aparece en listas de sanciones internacionales y no puede ser aprobada.'
-        );
-        setLoading(false);
-        setScreening(false);
-        return;
-      } else if (screeningResult.isPEP || pep) {
-        // PEP found - show warning but allow to continue
-        setSanctionsWarning(
-          'Se identificó como Persona Políticamente Expuesta (PEP). Tu solicitud será revisada manualmente.'
-        );
-      }
+    //   setScreening(false);
 
-      setScreening(false);
-
-      // Step 4: Navigate to identity verification (NEW - Socure ID+)
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('caseId', saveResult.caseId!);
-      params.set('ownerName', ownerName);
-      params.set('nationalId', ownerId);
-      params.set('dateOfBirth', dateOfBirth);
-      params.set('firstName', ownerName.split(' ')[0] || '');
-      params.set('lastName', ownerName.split(' ').slice(1).join(' ') || '');
-      router.push(`/onboarding/identity-verification?${params.toString()}`);
-    } catch (err) {
-      console.error('Error in ownership:', err);
-      setError(err instanceof Error ? err.message : 'Error inesperado');
-      setLoading(false);
-      setScreening(false);
-    }
+    //   // Step 4: Navigate to identity verification (NEW - Socure ID+)
+    //   const params = new URLSearchParams(searchParams.toString());
+    //   params.set('caseId', saveResult.caseId!);
+    //   params.set('ownerName', ownerName);
+    //   params.set('nationalId', ownerId);
+    //   params.set('dateOfBirth', dateOfBirth);
+    //   params.set('firstName', ownerName.split(' ')[0] || '');
+    //   params.set('lastName', ownerName.split(' ').slice(1).join(' ') || '');
+    //   router.push(`/onboarding/identity-verification?${params.toString()}`);
+    // } catch (err) {
+    //   console.error('Error in ownership:', err);
+    //   setError(err instanceof Error ? err.message : 'Error inesperado');
+    //   setLoading(false);
+    //   setScreening(false);
+    // }
   };
 
   const handleBack = () => {
@@ -148,20 +150,20 @@ function OwnershipContent() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-sm text-base-content/60">Paso 4 de 6</p>
+        <p className="text-xl text-base-content/60">Paso 2 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
           <aside className="md:w-56 shrink-0 space-y-3">
-            <p className="text-sm font-medium text-primary">4 / 6</p>
-            <nav className="space-y-2 text-sm">
+            <p className="text-xl font-medium text-primary">2 / 6</p>
+            <nav className="space-y-2 text-md">
               {steps.map((step, idx) => (
                 <div
                   key={step}
                   className={`px-3 py-2 rounded-lg ${
-                    idx === 3 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                    idx === 1 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
                   }`}
                 >
                   {step}
@@ -186,7 +188,7 @@ function OwnershipContent() {
               <div className="grid grid-cols-1 gap-4">
                 {/* Owner Name */}
                 <label className="form-control w-full">
-                  <span className="label-text text-sm font-medium">Nombre completo *</span>
+                  <span className="label-text text-md font-medium">Nombre completo *</span>
                   <Input
                     type="text"
                     className="input input-bordered w-full"
@@ -198,11 +200,13 @@ function OwnershipContent() {
 
                 {/* Cédula */}
                 <label className="form-control w-full">
-                  <span className="label-text text-sm font-medium">Cédula *</span>
+                  <span className="label-text text-md font-medium">Cédula *</span>
                   <Input
+                    required
                     type="text"
                     className="input input-bordered w-full"
-                    defaultValue={ownerId}
+                    maxLength={13}
+                    value={ownerId}
                     onChange={(e) => setOwnerId(formatCedula(e.target.value))}
                     placeholder="001-1234567-8"
                   />
@@ -214,7 +218,7 @@ function OwnershipContent() {
                 {/* Date of Birth & Ownership % */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
-                    <span className="label-text text-sm font-medium">Fecha de nacimiento</span>
+                    <span className="label-text text-md font-medium">Fecha de nacimiento</span>
                     <Input
                       type="date"
                       className="input input-bordered w-full"
@@ -224,11 +228,11 @@ function OwnershipContent() {
                   </label>
 
                   <label className="form-control w-full">
-                    <span className="label-text text-sm font-medium">% de participación *</span>
+                    <span className="label-text text-md font-medium">% de participación *</span>
                     <Input
                       type="number"
                       min="0"
-                      max="100"
+                      maxLength={3}
                       className="input input-bordered w-full"
                       defaultValue={ownershipPct}
                       onChange={(e) => setOwnershipPct(e.target.value)}
@@ -239,7 +243,7 @@ function OwnershipContent() {
 
                 {/* Position */}
                 <label className="form-control w-full">
-                  <span className="label-text text-sm font-medium">Cargo</span>
+                  <span className="label-text text-md font-medium">Cargo</span>
                   <Input
                     type="text"
                     className="input input-bordered w-full"
@@ -256,7 +260,7 @@ function OwnershipContent() {
                     onChange={(checked) => setPep(checked)}
                   />
                   <div className="flex-1">
-                    <span className="font-medium text-sm">
+                    <span className="font-medium text-md">
                       Es Persona Políticamente Expuesta (PEP)?
                     </span>
                     <p className="text-xs text-base-content/60 mt-1">
@@ -267,54 +271,54 @@ function OwnershipContent() {
               </div>
 
               {/* Screening status */}
-              {screening && (
+              {/* {screening && (
                 <div className="p-4 bg-info/10 border border-info/30 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="loading loading-spinner loading-sm text-info"></div>
-                    <p className="text-sm text-info">
+                    <p className="text-md text-info">
                       Verificando contra listas de sanciones OFAC/PEP...
                     </p>
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Sanctions warning */}
               {sanctionsWarning && (
                 <div className="p-4 bg-warning/10 border border-warning rounded-lg">
-                  <p className="text-sm text-warning">{sanctionsWarning}</p>
+                  <p className="text-md text-warning">{sanctionsWarning}</p>
                 </div>
               )}
 
               {/* Error message */}
               {error && (
                 <div className="p-4 bg-error/10 border border-error rounded-lg">
-                  <p className="text-sm text-error">{error}</p>
+                  <p className="text-md text-error">{error}</p>
                 </div>
               )}
 
               {/* Info box */}
-              <div className="p-4 bg-info/10 border border-info/30 rounded-lg">
-                <p className="text-sm text-base-content/80">
-                  <strong>Siguiente paso:</strong> Tomarás una selfie para verificar tu identidad con
-                  tecnología de detección de liveness.
+              {/* <div className="p-4  bg-info/10 border border-info/30 rounded-lg">
+                <p className="text-md text-base-content/80 mb-10">
+                    Documento de identidad oficial del propietario
+                  <DropzoneComponent />
                 </p>
-              </div>
+              </div> */}
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-2">
-                <Button
+                <button
                   className="btn btn-ghost btn-sm"
                   onClick={handleBack}
                   disabled={loading || screening}
                 >
                   Atrás
-                </Button>
+                </button>
 
                 <Button
                   className="btn btn-primary"
                   disabled={loading || screening}
                 >
-                  {loading || screening ? 'Procesando...' : 'Continuar a Verificación de Identidad'}
+                  {loading || screening ? 'Procesando...' : 'Continuar'}
                 </Button>
               </div>
             </form>
