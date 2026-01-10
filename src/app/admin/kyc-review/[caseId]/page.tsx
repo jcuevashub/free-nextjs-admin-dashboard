@@ -12,6 +12,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { getCaseDetailAction, type CaseDetail } from '@/app/actions/kyc/get-case-detail';
 import { approveCaseAction } from '@/app/actions/kyc/approve-case';
 import { rejectCaseAction } from '@/app/actions/kyc/reject-case';
+import Button from '@/components/ui/button/Button';
 
 export default function KYCCaseDetailPage() {
   const router = useRouter();
@@ -110,7 +111,7 @@ export default function KYCCaseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+      <div className="flex items-center justify-center py-12">
         <div className="flex items-center gap-3">
           <div className="loading loading-spinner loading-lg text-primary"></div>
           <p className="text-lg">Cargando caso...</p>
@@ -121,7 +122,7 @@ export default function KYCCaseDetailPage() {
 
   if (error || !caseDetail) {
     return (
-      <div className="min-h-screen bg-base-200 p-8">
+      <div className="p-8">
         <div className="max-w-4xl mx-auto">
           <div className="p-6 bg-error/10 border border-error rounded-lg">
             <p className="text-error text-lg">{error || 'Caso no encontrado'}</p>
@@ -142,7 +143,7 @@ export default function KYCCaseDetailPage() {
   const fraudRisk = getFraudRiskLevel(caseDetail.socureFraudScore);
 
   return (
-    <div className="min-h-screen bg-base-200 p-4 md:p-8">
+    <div className="p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -153,20 +154,21 @@ export default function KYCCaseDetailPage() {
             >
               ← Volver a lista
             </button>
-            <h1 className="text-3xl font-bold">{companyData.companyName || 'Caso KYC'}</h1>
-            <p className="text-base-content/70 mt-1">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white/90">
+              {companyData.companyName || 'Caso KYC'}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
               Caso ID: {caseDetail.id.substring(0, 8)}... • RNC: {companyData.rnc || 'N/A'}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`badge ${
-                caseDetail.status === 'pending_review'
+              className={`badge ${caseDetail.status === 'pending_review'
                   ? 'badge-warning'
                   : caseDetail.status === 'approved'
-                  ? 'badge-success'
-                  : 'badge-error'
-              } badge-lg`}
+                    ? 'badge-success'
+                    : 'badge-error'
+                } badge-lg`}
             >
               {caseDetail.status}
             </span>
@@ -179,7 +181,7 @@ export default function KYCCaseDetailPage() {
             {/* Company Information */}
             <div className="rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">Información de la Empresa</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-md">
                 <div>
                   <p className="text-base-content/60">Nombre legal</p>
                   <p className="font-medium">{companyData.companyName || 'N/A'}</p>
@@ -204,26 +206,23 @@ export default function KYCCaseDetailPage() {
                   <p className="text-base-content/60">Descripción</p>
                   <p className="font-medium">{companyData.description || 'N/A'}</p>
                 </div>
+                <div className="md:col-span-2">
+                  <p className="text-base-content/60">Dirección</p>
+                  <p className="font-medium">   <p>{addressData.addressLine1 || 'N/A'}</p>
+                    {addressData.addressLine2 && <p>{addressData.addressLine2}</p>}
+                    <p>
+                      {addressData.city || 'N/A'}, {addressData.province || 'N/A'}
+                    </p>
+                    {addressData.postalCode && <p>Código postal: {addressData.postalCode}</p>}</p>
+                </div>
               </div>
             </div>
 
-            {/* Address */}
-            <div className="rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6">
-              <h2 className="text-xl font-semibold mb-4">Dirección</h2>
-              <div className="text-sm space-y-2">
-                <p>{addressData.addressLine1 || 'N/A'}</p>
-                {addressData.addressLine2 && <p>{addressData.addressLine2}</p>}
-                <p>
-                  {addressData.city || 'N/A'}, {addressData.province || 'N/A'}
-                </p>
-                {addressData.postalCode && <p>Código postal: {addressData.postalCode}</p>}
-              </div>
-            </div>
 
             {/* Owner/UBO */}
             <div className="rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6">
-              <h2 className="text-xl font-semibold mb-4">Propietario / UBO</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <h2 className="text-xl font-semibold mb-4">Propietario</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-md">
                 <div>
                   <p className="text-base-content/60">Nombre completo</p>
                   <p className="font-medium">{ownershipData.ownerName || 'N/A'}</p>
@@ -252,7 +251,7 @@ export default function KYCCaseDetailPage() {
             {/* Expected Activity */}
             <div className="rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">Actividad Esperada</h2>
-              <div className="text-sm space-y-3">
+              <div className="text-md space-y-3">
                 <div>
                   <p className="text-base-content/60">Volumen mensual estimado</p>
                   <p className="font-medium">{expectedActivityData.monthlyVolume || 'N/A'}</p>
@@ -272,7 +271,7 @@ export default function KYCCaseDetailPage() {
             {followUpData.additionalInfo && (
               <div className="rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6">
                 <h2 className="text-xl font-semibold mb-4">Notas Adicionales</h2>
-                <p className="text-sm">{followUpData.additionalInfo}</p>
+                <p className="text-md">{followUpData.additionalInfo}</p>
               </div>
             )}
 
@@ -283,7 +282,7 @@ export default function KYCCaseDetailPage() {
               </h2>
               <div className="space-y-3">
                 {caseDetail.documents.length === 0 ? (
-                  <p className="text-sm text-base-content/60">No hay documentos subidos</p>
+                  <p className="text-md text-base-content/60">No hay documentos subidos</p>
                 ) : (
                   caseDetail.documents.map((doc) => (
                     <div
@@ -292,16 +291,15 @@ export default function KYCCaseDetailPage() {
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-sm">{doc.documentType}</p>
+                          <p className="font-medium text-md">{doc.documentType}</p>
                           {doc.socureVerificationStatus && (
                             <span
-                              className={`badge badge-sm ${
-                                doc.socureVerificationStatus === 'verified'
+                              className={`badge badge-sm ${doc.socureVerificationStatus === 'verified'
                                   ? 'badge-success'
                                   : doc.socureVerificationStatus === 'rejected'
-                                  ? 'badge-error'
-                                  : 'badge-warning'
-                              }`}
+                                    ? 'badge-error'
+                                    : 'badge-warning'
+                                }`}
                             >
                               {doc.socureVerificationStatus}
                             </span>
@@ -341,7 +339,7 @@ export default function KYCCaseDetailPage() {
                     <div key={screening.id} className="border border-base-300 rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <p className="font-medium text-sm">{screening.entityName}</p>
+                          <p className="font-medium text-md">{screening.entityName}</p>
                           <p className="text-xs text-base-content/60">
                             {screening.entityType === 'company' ? 'Empresa' : 'Persona'}
                           </p>
@@ -375,7 +373,7 @@ export default function KYCCaseDetailPage() {
                 <div className="space-y-3">
                   {caseDetail.identityVerifications.map((verification) => (
                     <div key={verification.id} className="border border-base-300 rounded-lg p-4">
-                      <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="grid grid-cols-2 gap-3 text-md">
                         <div>
                           <p className="text-base-content/60">Decisión</p>
                           <p className="font-medium">
@@ -423,24 +421,23 @@ export default function KYCCaseDetailPage() {
               {/* Liveness */}
               {caseDetail.livenessScore !== null && (
                 <div>
-                  <p className="text-sm text-base-content/60">Liveness Score</p>
+                  <p className="text-md text-base-content/60">Liveness Score</p>
                   <p className="text-2xl font-bold">
                     {(caseDetail.livenessScore * 100).toFixed(0)}%
                   </p>
                   <p
-                    className={`text-xs ${
-                      caseDetail.livenessScore >= 0.9
+                    className={`text-xs ${caseDetail.livenessScore >= 0.9
                         ? 'text-success'
                         : caseDetail.livenessScore >= 0.7
-                        ? 'text-warning'
-                        : 'text-error'
-                    }`}
+                          ? 'text-warning'
+                          : 'text-error'
+                      }`}
                   >
                     {caseDetail.livenessScore >= 0.9
                       ? 'Excelente'
                       : caseDetail.livenessScore >= 0.7
-                      ? 'Bueno'
-                      : 'Dudoso'}
+                        ? 'Bueno'
+                        : 'Dudoso'}
                   </p>
                 </div>
               )}
@@ -448,7 +445,7 @@ export default function KYCCaseDetailPage() {
               {/* Fraud */}
               {caseDetail.socureFraudScore !== null && (
                 <div>
-                  <p className="text-sm text-base-content/60">Fraud Score (Sigma)</p>
+                  <p className="text-md text-base-content/60">Fraud Score (Sigma)</p>
                   <p className="text-2xl font-bold">
                     {(caseDetail.socureFraudScore * 1000).toFixed(0)}
                   </p>
@@ -458,7 +455,7 @@ export default function KYCCaseDetailPage() {
 
               {/* Documents */}
               <div>
-                <p className="text-sm text-base-content/60">Documentos Verificados</p>
+                <p className="text-md text-base-content/60">Documentos Verificados</p>
                 <p className="text-2xl font-bold">
                   {caseDetail.documentsVerified} / {caseDetail.documentsUploaded}
                 </p>
@@ -467,20 +464,18 @@ export default function KYCCaseDetailPage() {
               {/* OFAC/PEP */}
               <div className="space-y-2">
                 <div
-                  className={`p-3 rounded-lg ${
-                    caseDetail.ofacMatchFound ? 'bg-error/10' : 'bg-success/10'
-                  }`}
+                  className={`p-3 rounded-lg ${caseDetail.ofacMatchFound ? 'bg-error/10' : 'bg-success/10'
+                    }`}
                 >
-                  <p className="text-sm font-medium">
+                  <p className="text-md font-medium">
                     {caseDetail.ofacMatchFound ? '⚠️ OFAC Match' : '✓ OFAC Clean'}
                   </p>
                 </div>
                 <div
-                  className={`p-3 rounded-lg ${
-                    caseDetail.pepMatchFound ? 'bg-warning/10' : 'bg-success/10'
-                  }`}
+                  className={`p-3 rounded-lg ${caseDetail.pepMatchFound ? 'bg-warning/10' : 'bg-success/10'
+                    }`}
                 >
-                  <p className="text-sm font-medium">
+                  <p className="text-md font-medium">
                     {caseDetail.pepMatchFound ? '⚠️ PEP Detectado' : '✓ No PEP'}
                   </p>
                 </div>
@@ -488,15 +483,15 @@ export default function KYCCaseDetailPage() {
 
               {/* Account preference */}
               <div>
-                <p className="text-sm text-base-content/60">Tipo de cuenta</p>
+                <p className="text-md text-base-content/60">Tipo de cuenta</p>
                 <p className="font-medium">
                   {caseDetail.accountPreference === 'peso'
                     ? 'Pesos (DOP)'
                     : caseDetail.accountPreference === 'dolar'
-                    ? 'Dólares (USD)'
-                    : caseDetail.accountPreference === 'both'
-                    ? 'Ambas (DOP + USD)'
-                    : 'N/A'}
+                      ? 'Dólares (USD)'
+                      : caseDetail.accountPreference === 'both'
+                        ? 'Ambas (DOP + USD)'
+                        : 'N/A'}
                 </p>
               </div>
             </div>
@@ -507,29 +502,29 @@ export default function KYCCaseDetailPage() {
 
               {!actionType ? (
                 <div className="space-y-2">
-                  <button
+                  <Button
                     className="btn btn-success w-full"
                     onClick={() => setActionType('approve')}
                   >
                     Aprobar Caso
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     className="btn btn-warning w-full"
                     onClick={() => setActionType('update')}
                   >
                     Solicitar Actualización
-                  </button>
-                  <button
-                    className="btn btn-error w-full"
+                  </Button>
+                  <Button
+                    className="w-full"
                     onClick={() => setActionType('reject')}
                   >
                     Rechazar Caso
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium mb-2">
+                    <p className="text-md font-medium mb-2">
                       {actionType === 'approve'
                         ? 'Notas de aprobación (opcional)'
                         : 'Razón (requerido)'}
@@ -549,7 +544,7 @@ export default function KYCCaseDetailPage() {
 
                   {actionError && (
                     <div className="p-3 bg-error/10 border border-error rounded-lg">
-                      <p className="text-sm text-error">{actionError}</p>
+                      <p className="text-md text-error">{actionError}</p>
                     </div>
                   )}
 
@@ -566,13 +561,12 @@ export default function KYCCaseDetailPage() {
                       Cancelar
                     </button>
                     <button
-                      className={`btn flex-1 ${
-                        actionType === 'approve'
+                      className={`btn flex-1 ${actionType === 'approve'
                           ? 'btn-success'
                           : actionType === 'update'
-                          ? 'btn-warning'
-                          : 'btn-error'
-                      }`}
+                            ? 'btn-warning'
+                            : 'btn-error'
+                        }`}
                       onClick={() => {
                         if (actionType === 'approve') {
                           handleApprove();
@@ -587,10 +581,10 @@ export default function KYCCaseDetailPage() {
                       {actionLoading
                         ? 'Procesando...'
                         : actionType === 'approve'
-                        ? 'Confirmar Aprobación'
-                        : actionType === 'update'
-                        ? 'Solicitar Actualización'
-                        : 'Confirmar Rechazo'}
+                          ? 'Confirmar Aprobación'
+                          : actionType === 'update'
+                            ? 'Solicitar Actualización'
+                            : 'Confirmar Rechazo'}
                     </button>
                   </div>
                 </div>
@@ -600,7 +594,7 @@ export default function KYCCaseDetailPage() {
             {/* Timeline */}
             <div className="rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">Línea de Tiempo</h2>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-2 text-md">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-primary"></div>
                   <div>

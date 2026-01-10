@@ -18,6 +18,7 @@ import { formatCedula, formatRnc } from '@/lib/utils';
 import Input from '@/components/form/input/InputField';
 import Checkbox from '@/components/form/input/Checkbox';
 import Button from '@/components/ui/button/Button';
+import Alert from '@/components/ui/alert/Alert';
 
 const steps = [
   'Crear cuenta',
@@ -142,7 +143,7 @@ function OwnershipContent() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 text-base-content flex flex-col">
+    <div className="min-h-screen bg-base-200 text-base-content flex flex-col dark:text-white/90">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
@@ -159,7 +160,7 @@ function OwnershipContent() {
                 <div
                   key={step}
                   className={`px-3 py-2 rounded-lg ${
-                    idx === 1 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                    idx === 2 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
                   }`}
                 >
                   {step}
@@ -286,19 +287,16 @@ function OwnershipContent() {
               )}
 
               {/* Error message */}
-              {error && (
-                <div className="p-4 bg-error/10 border border-error rounded-lg">
-                  <p className="text-md text-error">{error}</p>
-                </div>
+                {error && (
+                   <Alert
+                    variant="error"
+                    title="Error Message"
+                    message={error}
+                    showLink={false}
+                    linkHref="/"
+                    linkText="Learn more"
+                  />
               )}
-
-              {/* Info box */}
-              {/* <div className="p-4  bg-info/10 border border-info/30 rounded-lg">
-                <p className="text-md text-base-content/80 mb-10">
-                    Documento de identidad oficial del propietario
-                  <DropzoneComponent />
-                </p>
-              </div> */}
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-2">

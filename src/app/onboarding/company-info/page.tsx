@@ -65,7 +65,7 @@ function CompanyInfoContent() {
       // Step 1: Validate form data with Zod
       const validation = companyInfoSchema.safeParse({
         companyName,
-        rnc,
+        rnc: rnc.replace(/-/g, ''),
         phone,
         industry,
         description,
@@ -167,24 +167,24 @@ function CompanyInfoContent() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 text-base-content flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
-        <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
-        <p className="text-xl text-base-content/60">Paso 1 de 6</p>
+        <div className="h-10 w-10 rounded-full border" />
+        <p className="text-xl text-gray-800 dark:text-white/90">Paso 1 de 6</p>
       </header>
 
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
           <aside className="md:w-56 shrink-0 space-y-3">
-            <p className="text-xl font-medium text-primary">1 / 6</p>
+            <p className="text-xl font-medium text-gray-800 dark:text-white/90">1 / 6</p>
             <nav className="space-y-2 text-md">
               {steps.map((step, idx) => (
                 <div
                   key={step}
                   className={`px-3 py-2 rounded-lg ${
-                    idx === 0 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                    idx === 1 ? 'text-base-content dark:text-white/90 font-semibold' : 'dark:text-white/30'
                   }`}
                 >
                   {step}
@@ -197,11 +197,11 @@ function CompanyInfoContent() {
           <section className="flex-1">
             <form
               onSubmit={handleSubmit}
-              className="rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6 md:p-8 space-y-4"
+              className="rounded-2xl border border-base-300 shadow-sm p-6 md:p-8 space-y-4"
             >
               <div className="space-y-1">
-                <h1 className="text-2xl font-semibold">Información de la empresa</h1>
-                <p className="text-base-content/70">
+                <h1 className="text-2xl font-semibold text-base-content dark:text-white/90">Información de la empresa</h1>
+                <p className="text-base-content dark:text-gray-400">
                   Cuéntanos sobre tu empresa para iniciar la verificación.
                 </p>
               </div>
@@ -209,7 +209,7 @@ function CompanyInfoContent() {
               <div className="grid grid-cols-1 gap-4">
                 {/* Company Name */}
                 <label className="form-control w-full">
-                  <span className="label-text text-md font-medium">Nombre legal *</span>
+                  <span className="text-base-content dark:text-white/90 text-md font-medium">Nombre legal *</span>
                   <Input
                     required
                     type="text"
@@ -222,7 +222,7 @@ function CompanyInfoContent() {
 
                 {/* RNC */}
                 <label className="form-control w-full">
-                  <span className="label-text text-md font-medium">RNC *</span>
+                  <span className="label-text text-base-content dark:text-white/90 text-md font-medium">RNC *</span>
                   <Input
                     required
                     type="text"
@@ -232,7 +232,7 @@ function CompanyInfoContent() {
                     placeholder="123-45678-9"
                     maxLength={13}
                   />
-                  <span className="text-xs text-base-content/60 mt-1">
+                  <span className="text-xs text-base-content dark:text-white/90 mt-1">
                     Formato: 9 o 11 dígitos (ej. 123-45678-9)
                   </span>
                 </label>
@@ -240,7 +240,7 @@ function CompanyInfoContent() {
                 {/* Phone & Industry */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
-                    <span className="label-text text-md font-medium">Teléfono *</span>
+                    <span className="label-text text-base-content dark:text-white/90 text-md font-medium">Teléfono *</span>
                     <Input
                       required
                       type="tel"
@@ -253,11 +253,11 @@ function CompanyInfoContent() {
                   </label>
 
                   <label className="form-control w-full">
-                    <span className="label-text text-md font-medium">Industria</span>
+                    <span className="label-text text-base-content dark:text-white/90 text-md font-medium">Industria</span>
                     <Input
                       required
                       type="text"
-                      className="input input-bordered w-full"
+                      className="inputinput-bordered w-full"
                       value={industry}
                       onChange={(e) => setIndustry(e.target.value)}
                       placeholder="Tecnología, Retail..."
@@ -267,7 +267,7 @@ function CompanyInfoContent() {
 
                 {/* Website */}
                 <label className="form-control w-full">
-                  <span className="label-text text-md font-medium">Sitio web (opcional)</span>
+                  <span className="label-text text-base-content dark:text-white/90 text-md font-medium">Sitio web (opcional)</span>
                   <Input
                     type="url"
                     className="input input-bordered w-full"
@@ -279,7 +279,7 @@ function CompanyInfoContent() {
 
                 {/* Description */}
                 <label className="form-control w-full">
-                  <span className="label-text text-md font-medium">Descripción</span>
+                  <span className="label-text text-base-content dark:text-white/90 text-md font-medium">Descripción</span>
                   <TextArea
                     className="w-full"
                     rows={3}
@@ -289,16 +289,16 @@ function CompanyInfoContent() {
                   />
                 </label>
               </div>
-                          
+
               <div className="space-y-1">
-                <h1 className="text-2xl font-semibold">Dirección de la empresa</h1>
-                <p className="text-base-content/70">Usaremos esta dirección para verificaciones y notificaciones.</p>
+                <h1 className="text-2xl font-semibold text-base-content dark:text-white/90">Dirección de la empresa</h1>
+                <p className="text-gray-500 dark:text-gray-400">Usaremos esta dirección para verificaciones y notificaciones.</p>
               </div>
 
               <div className="grid grid-cols-1 gap-4">
                 {/* Address Line 1 */}
                 <label className="form-control w-full">
-                  <span className="label-text text-md font-medium">Dirección *</span>
+                  <span className="text-base-content dark:text-white/90 label-text text-md font-medium">Dirección *</span>
                   <Input
                     required
                     type="text"
@@ -311,7 +311,7 @@ function CompanyInfoContent() {
 
                 {/* Address Line 2 */}
                 <label className="form-control w-full">
-                  <span className="label-text text-md font-medium">Apartamento, suite, etc. (opcional)</span>
+                  <span className="text-base-content dark:text-white/90 label-text text-md font-medium">Apartamento, suite, etc. (opcional)</span>
                   <Input
                     required
                     type="text"
@@ -325,7 +325,7 @@ function CompanyInfoContent() {
                 {/* City & Province */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
-                    <span className="label-text text-md font-medium">Ciudad *</span>
+                    <span className="text-base-content dark:text-white/90 label-text text-md font-medium">Ciudad *</span>
                     <Input
                       required
                       type="text"
@@ -336,7 +336,7 @@ function CompanyInfoContent() {
                     />
                   </label>
                   <label className="form-control w-full">
-                    <span className="label-text text-md font-medium">Provincia *</span>
+                    <span className="text-base-content dark:text-white/90 label-text text-md font-medium">Provincia *</span>
                     <Input
                       required
                       type="text"
@@ -351,7 +351,7 @@ function CompanyInfoContent() {
                 {/* Postal Code & Country */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="form-control w-full">
-                    <span className="label-text text-md font-medium">Código postal</span>
+                    <span className="text-base-content dark:text-white/90 label-text text-md font-medium">Código postal</span>
                     <Input
                       required
                       type="text"
@@ -362,7 +362,7 @@ function CompanyInfoContent() {
                     />
                   </label>
                   <label className="form-control w-full">
-                    <span className="label-text text-md font-medium">País</span>
+                    <span className="text-base-content dark:text-white/90 label-text text-md font-medium">País</span>
                     <Input
                       type="text"
                       disabled
@@ -372,18 +372,6 @@ function CompanyInfoContent() {
                   </label>
                 </div>
               </div>
-
-              {/* Screening status */}
-              {/* {screening && (
-                <div className="p-4 bg-info/10 border border-info/30 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="loading loading-spinner loading-sm text-info"></div>
-                    <p className="text-md text-info">
-                      Verificando contra listas de sanciones OFAC/PEP...
-                    </p>
-                  </div>
-                </div>
-              )} */}
 
               {/* Sanctions warning */}
               {sanctionsWarning && (

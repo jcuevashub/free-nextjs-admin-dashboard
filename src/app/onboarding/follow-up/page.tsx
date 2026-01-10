@@ -12,6 +12,7 @@ import { useState, Suspense } from 'react';
 import { submitCaseAction } from '@/app/actions/onboarding/submit-case';
 import TextArea from '@/components/form/input/TextArea';
 import Button from '@/components/ui/button/Button';
+import { saveStepAction } from '@/app/actions/onboarding/save-step';
 
 const steps = [
   'Crear cuenta',
@@ -38,6 +39,20 @@ function FollowUpContent() {
     setError(null);
 
     try {
+      const saveResult = await saveStepAction({
+        step: 'follow_up',
+        caseId,
+        data: {
+          additionalInfo,
+        },
+      });
+
+      if (!saveResult.success) {
+        setError(saveResult.error || 'Error al guardar información');
+        setLoading(false);
+        return;
+      }
+      
       // Submit case for review with auto-decision logic
       const result = await submitCaseAction({
         caseId: caseId!,
@@ -48,6 +63,8 @@ function FollowUpContent() {
         setLoading(false);
         return;
       }
+
+ 
 
       // Navigate to complete page
       router.push('/onboarding/complete');
@@ -78,9 +95,8 @@ function FollowUpContent() {
               {steps.map((step, idx) => (
                 <div
                   key={step}
-                  className={`px-3 py-2 rounded-lg ${
-                    idx === 5 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
-                  }`}
+                  className={`px-3 py-2 rounded-lg ${idx === 5 ? 'bg-primary/10 text-primary font-semibold' : 'text-base-content/60'
+                    }`}
                 >
                   {step}
                 </div>
@@ -129,7 +145,7 @@ function FollowUpContent() {
                 <button type="button" className="btn btn-ghost btn-sm" onClick={handleBack} disabled={loading}>
                   Atrás
                 </button>
-                <Button  className="btn btn-primary" disabled={loading}>
+                <Button className="btn btn-primary" disabled={loading}>
                   {loading ? 'Enviando...' : 'Enviar a Revisión'}
                 </Button>
               </div>

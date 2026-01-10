@@ -90,7 +90,6 @@ export async function getCaseAction(): Promise<GetCaseResult> {
         submitted_at,
         reviewed_at,
         completed_at,
-        admin_notes,
         company_id
       `
       )
@@ -170,7 +169,7 @@ export async function getCaseAction(): Promise<GetCaseResult> {
         reviewedAt: onboardingCase.reviewed_at,
         completedAt: onboardingCase.completed_at,
         // Admin notes
-        adminNotes: onboardingCase.admin_notes,
+        adminNotes: null
       },
       company,
     };

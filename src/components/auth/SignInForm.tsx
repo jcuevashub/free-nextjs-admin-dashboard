@@ -28,7 +28,7 @@ export default function SignInForm() {
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
               Iniciar sesión
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-md text-gray-500 dark:text-gray-400">
               Ingresa tu correo y contraseña para acceder.
             </p>
           </div>
@@ -81,7 +81,7 @@ export default function SignInForm() {
                   </div>
                   <Link
                     href="/reset-password"
-                    className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                    className="text-md text-brand-500 hover:text-brand-600 dark:text-brand-400"
                   >
                     ¿Olvidaste tu contraseña?
                   </Link>
@@ -94,11 +94,11 @@ export default function SignInForm() {
               </div>
             </form>
             {error ? (
-              <p className="mt-3 text-sm text-error-500">{error}</p>
+              <p className="mt-3 text-md text-error-500">{error}</p>
             ) : null}
 
             <div className="mt-5">
-              <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
+              <p className="text-md font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                 ¿No tienes cuenta?{" "}
                 <Link
                   href="/signup"

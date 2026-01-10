@@ -16,6 +16,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useRef, Suspense } from 'react';
 import { uploadDocumentAction } from '@/app/actions/onboarding/upload-document';
 import Button from '@/components/ui/button/Button';
+import Alert from '@/components/ui/alert/Alert';
+import { saveStepAction } from '@/app/actions/onboarding/save-step';
 
 interface DocumentStatus {
   uploaded: boolean;
@@ -168,6 +170,18 @@ function DocumentsContent() {
       return;
     }
 
+    const saveResult = await saveStepAction({
+            step: 'documents',
+            caseId,
+            data: {
+            },
+          });
+
+    if (!saveResult.success) {
+        setError(saveResult.error || 'Error al guardar información');
+        setLoading(false);
+        return;
+      }
     // Navigate to next step
     const params = new URLSearchParams(searchParams.toString());
     router.push(`/onboarding/expected-activity?${params.toString()}`);
@@ -183,7 +197,7 @@ function DocumentsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 text-base-content flex flex-col">
+    <div className="min-h-screen bg-base-200 text-base-content flex flex-col dark:text-white/90">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4">
         <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20" />
@@ -254,12 +268,12 @@ function DocumentsContent() {
                         {/* Upload / remove actions */}
                         <div className="flex items-center gap-2">
                           {!status.uploaded && !isUploading && (
-                            <Button
+                            <p
                               onClick={() => triggerFileInput(doc.key)}
-                              className="btn btn-primary btn-sm"
+                              className="text-md cursor-pointer text-primary hover:underline text-blue-500"
                             >
                               Subir
-                            </Button>
+                            </p>
                           )}
                           {isUploading && (
                             <div className="flex items-center gap-2 text-info text-sm">
@@ -271,7 +285,7 @@ function DocumentsContent() {
                             <button
                               type="button"
                               onClick={() => handleRemove(doc.key)}
-                              className="inline-flex items-center gap-1 text-error hover:text-error/80 text-sm"
+                              className="inline-flex items-center gap-1 text-error hover:text-error/80 text-sm text-error-500"
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -296,7 +310,7 @@ function DocumentsContent() {
                       {/* Uploaded status */}
                       {status.uploaded && (
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-md">
+                          <div className="flex items-center gap-2 text-md text-success-500">
                             <svg
                               className="w-4 h-4 text-success"
                               fill="none"
@@ -314,7 +328,7 @@ function DocumentsContent() {
                           </div>
 
                           {/* Socure verification status */}
-                          {status.socureStatus && (
+                          {/* {status.socureStatus && (
                             <div className="text-xs">
                               <span className="text-base-content/60">Estado Socure DocV: </span>
                               <span
@@ -334,7 +348,7 @@ function DocumentsContent() {
                                 </span>
                               )}
                             </div>
-                          )}
+                          )} */}
 
                           {status.url && (
                             <a
@@ -377,9 +391,14 @@ function DocumentsContent() {
 
               {/* Error message */}
               {error && (
-                <div className="p-4 bg-error/10 border border-error rounded-lg">
-                  <p className="text-sm text-error">{error}</p>
-                </div>
+                   <Alert
+                    variant="error"
+                    title="Error Message"
+                    message={error}
+                    showLink={false}
+                    linkHref="/"
+                    linkText="Learn more"
+                  />
               )}
 
               {/* Actions */}

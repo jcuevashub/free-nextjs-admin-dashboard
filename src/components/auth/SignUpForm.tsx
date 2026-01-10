@@ -2,7 +2,7 @@
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
+import { EyeCloseIcon, EyeIcon } from "@/icons";
 import { signUpAction } from "@/app/(full-width-pages)/(auth)/signup/actions";
 import Link from "next/link";
 import { useState } from "react";
@@ -39,7 +39,7 @@ export default function SignUpForm() {
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
               Crear cuenta
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-md text-gray-500 dark:text-gray-400">
               Ingresa tu correo y contraseña para registrarte.
             </p>
           </div>
@@ -53,6 +53,7 @@ export default function SignUpForm() {
                       Nombre<span className="text-error-500">*</span>
                     </Label>
                     <Input
+                      required
                       type="text"
                       id="fname"
                       name="fname"
@@ -65,6 +66,7 @@ export default function SignUpForm() {
                       Apellido<span className="text-error-500">*</span>
                     </Label>
                     <Input
+                      required
                       type="text"
                       id="lname"
                       name="lname"
@@ -78,6 +80,7 @@ export default function SignUpForm() {
                     Correo electrónico<span className="text-error-500">*</span>
                   </Label>
                   <Input
+                    required
                     type="email"
                     id="email"
                     name="email"
@@ -91,6 +94,7 @@ export default function SignUpForm() {
                   </Label>
                   <div className="relative">
                     <Input
+                      required
                       placeholder="Ingresa tu contraseña"
                       type={showPassword ? "text" : "password"}
                       name="password"
@@ -133,12 +137,11 @@ export default function SignUpForm() {
                     </Link>
                   </p>
                 </div>
-                {/* <!-- Button --> */}
                 <div>
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`flex items-center justify-center w-full px-4 py-3 text-md font-medium text-white transition rounded-lg ${isChecked && !error ? 'bg-brand-500' : 'bg-gray-400 shadow-theme-xsdisabled:opacity-50 disabled:cursor-not-allowed'}`}
                   >
                     {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
                   </button>
@@ -146,12 +149,12 @@ export default function SignUpForm() {
               </div>
             </form>
             {error ? (
-              <p className="mt-3 text-sm text-error-500">{error}</p>
+              <p className="mt-3 text-md text-error-500">{error}</p>
             ) : null}
 
             <div className="mt-5">
-              <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                ¿Ya tienes cuenta?
+              <p className="text-md font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
+                ¿Ya tienes cuenta?{" "}
                 <Link
                   href="/signin"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400"

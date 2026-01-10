@@ -71,13 +71,13 @@ export default function OnboardingStartPage() {
           className="w-full max-w-xl rounded-2xl border border-base-300 bg-base-100 shadow-sm p-6 md:p-8 space-y-6"
         >
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold">Comienza tu aplicación</h1>
-            <p className="text-base-content/70">Tardarás menos de 10 minutos.</p>
+            <h1 className="text-2xl font-semibold text-gray-800 dark:text-white/90">Comienza tu aplicación</h1>
+            <p className="text-gray-500 dark:text-gray-400">Tardarás menos de 10 minutos.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <label className="form-control w-full">
-              <span className="label-text text-sm font-medium">Nombre</span>
+              <span className="label-text text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</span>
               <input
                 type="text"
                 required
@@ -88,7 +88,7 @@ export default function OnboardingStartPage() {
               />
             </label>
             <label className="form-control w-full">
-              <span className="label-text text-sm font-medium">Apellido</span>
+              <span className="label-text text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</span>
               <input
                 type="text"
                 required
@@ -115,7 +115,7 @@ export default function OnboardingStartPage() {
             {loading ? 'Iniciando...' : 'Comenzar solicitud'}
           </button>
 
-          <p className="text-xs text-base-content/60 leading-relaxed">
+          <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
             Al hacer clic en &quot;Comenzar solicitud&quot; aceptas los Términos y la Política de privacidad de Facil.do y consientes
             recibir comunicaciones electrónicas relacionadas a tu cuenta.
           </p>

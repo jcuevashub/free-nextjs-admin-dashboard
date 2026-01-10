@@ -161,7 +161,7 @@ export async function saveStepAction(input: SaveStepInput): Promise<SaveStepResu
         await supabase
           .from('companies')
           .update({
-            address: data.address,
+            address: (data.addressLine2 ? `, ${data.addressLine2}` : ''),
             city: data.city,
             country: data.country || 'DO',
           })

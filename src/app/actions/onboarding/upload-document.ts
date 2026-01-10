@@ -125,6 +125,7 @@ export async function uploadDocumentAction(
       .from('company_documents')
       .insert({
         company_id: companyId,
+        case_id: caseId, // Agregar case_id para buscar documentos por caso
         document_type: docType,
         file_name: file.name,
         file_url: publicUrl,

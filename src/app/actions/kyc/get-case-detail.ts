@@ -129,8 +129,8 @@ export async function getCaseDetailAction(caseId: string): Promise<GetCaseDetail
       };
     }
 
-    // Fetch related documents
-    const { data: documents } = await supabase
+    // Fetch related documents - usar case_id en lugar de company_id
+    const { data: documents, error: documentsError } = await supabase
       .from('company_documents')
       .select(
         `
@@ -145,8 +145,12 @@ export async function getCaseDetailAction(caseId: string): Promise<GetCaseDetail
         extraction_confidence
       `
       )
-      .eq('company_id', onboardingCase.company_id)
+      .eq('case_id', caseId)
       .order('uploaded_at', { ascending: false });
+
+    if (documentsError) {
+      console.error('[get-case-detail] Error fetching documents:', documentsError);
+    }
 
     // Fetch sanctions screenings
     const { data: screenings } = await supabase
