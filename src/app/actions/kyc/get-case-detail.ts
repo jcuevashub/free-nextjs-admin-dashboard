@@ -96,7 +96,7 @@ export async function getCaseDetailAction(caseId: string): Promise<GetCaseDetail
     if (authError || !user) {
       return {
         success: false,
-        error: 'No autenticado',
+        error: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
       };
     }
 

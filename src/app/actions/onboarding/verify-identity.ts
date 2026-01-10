@@ -55,7 +55,10 @@ export async function verifyIdentityAction(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { success: false, error: 'No autenticado' };
+      return {
+        success: false,
+        error: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+      };
     }
 
     // Call Socure ID+ API

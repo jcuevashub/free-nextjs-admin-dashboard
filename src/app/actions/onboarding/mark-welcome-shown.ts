@@ -27,7 +27,7 @@ export async function markWelcomeShownAction(): Promise<MarkWelcomeShownResult> 
     if (authError || !user) {
       return {
         success: false,
-        error: 'No autenticado',
+        error: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
       };
     }
 

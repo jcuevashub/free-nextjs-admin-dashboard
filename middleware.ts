@@ -32,8 +32,6 @@ export async function middleware(req: NextRequest) {
   const isPublicPath =
     pathname.startsWith('/signin') ||
     pathname.startsWith('/signup') ||
-    pathname.startsWith('/onboarding') ||
-    pathname.startsWith('/welcome') ||
     pathname.startsWith('/error-404') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
@@ -44,7 +42,18 @@ export async function middleware(req: NextRequest) {
   // 1. Redirect unauthenticated users to signin
   // ============================================
   if (!user && !isPublicPath) {
+    // Detect session expiration by checking for auth cookies
+    const authCookies = req.cookies.getAll().filter(cookie =>
+      cookie.name.includes('sb-') && cookie.name.includes('auth-token')
+    );
+
     const redirectUrl = new URL('/signin', req.url);
+
+    // If auth cookies exist but user is null, session has expired
+    if (authCookies.length > 0) {
+      redirectUrl.searchParams.set('session', 'expired');
+    }
+
     return NextResponse.redirect(redirectUrl);
   }
 

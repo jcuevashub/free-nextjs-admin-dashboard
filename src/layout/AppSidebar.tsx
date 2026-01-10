@@ -5,16 +5,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  BoxCubeIcon,
   ChevronDownIcon,
   EnvelopeIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
   PieChartIcon,
-  PlugInIcon,
 } from "../icons/index";
-import SidebarWidget from "./SidebarWidget";
 import CompanyDropdown from "@/components/header/CompanyDropdown";
 
 type NavItem = {
@@ -380,7 +377,6 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
       </div>
     </aside>
   );

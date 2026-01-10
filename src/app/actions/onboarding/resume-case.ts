@@ -25,7 +25,7 @@ export async function resumeOnboardingAction(): Promise<ResumeCaseResult> {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      redirect('/signin');
+      redirect('/signin?session=expired');
     }
 
     // Find incomplete onboarding case

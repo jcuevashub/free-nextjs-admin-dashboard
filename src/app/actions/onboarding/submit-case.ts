@@ -40,7 +40,10 @@ export async function submitCaseAction(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { success: false, error: 'No autenticado' };
+      return {
+        success: false,
+        error: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+      };
     }
 
     // Get onboarding case

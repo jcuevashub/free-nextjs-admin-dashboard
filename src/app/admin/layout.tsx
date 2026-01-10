@@ -4,14 +4,35 @@
  * Wraps all admin pages and ensures only users with role='owner' can access.
  */
 
-export default function AdminLayout({
+import { createSupabaseServer } from "@/lib/supabaseServer";
+import { redirect } from "next/navigation";
+
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Note: Auth check is done in each page's server actions
-  // The server actions verify role='owner' before returning data
-  // This prevents unauthorized access even if someone bypasses the client-side check
+  const supabase = await createSupabaseServer();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Protección: redirigir si no hay usuario
+  if (!user) {
+    redirect('/signin');
+  }
+
+  // Verificar que el usuario tenga rol de admin
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile || profile.role !== 'owner') {
+    redirect('/');
+  }
 
   return <>{children}</>;
 }

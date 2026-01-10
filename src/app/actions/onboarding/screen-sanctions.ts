@@ -52,7 +52,10 @@ export async function screenSanctionsAction(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { success: false, error: 'No autenticado' };
+      return {
+        success: false,
+        error: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+      };
     }
 
     // Perform sanctions screening
